@@ -1,0 +1,34 @@
+server:
+  shutdown: "graceful"
+  compression:
+    enabled: true
+    min-response-size: 2048
+
+spring:
+  application:
+    name: Downloader
+    title: <- down load ->
+  output:
+    ansi:
+      enabled: always
+  lifecycle:
+    timeout-per-shutdown-phase: "5s"
+  main:
+    web-application-type: NONE
+
+logging:
+  group:
+    bluegecko: "uk.co.bluegecko"
+  level:
+    root: info
+    bluegecko: debug
+
+back4app:
+  connection:
+    scheme: "https"
+    host: "parseapi.back4app.com"
+    path:
+      city: "/classes/Continentscountriescities_City"
+  application:
+    id: "TGtqdBWPEXhu3nq5eqVSq5JjIIkhLFmcYtsvSAlc"
+    key: "00TOggZ8Zqt5mMXu4qr5NhbSCYJR9TR6vajhlUrm"
