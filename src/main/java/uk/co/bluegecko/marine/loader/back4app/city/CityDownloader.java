@@ -58,7 +58,7 @@ public class CityDownloader implements ApplicationRunner {
 						.withSeparator(',')
 						.build()) {
 
-			writer.writeNext(new String[]{"id", "name", "adminCode", "latitude", "longitude", "population", "country"});
+			writer.writeNext(City.asHeaders());
 
 			for (String missing : missingCities) {
 				var s = missing.split(":");
@@ -72,8 +72,7 @@ public class CityDownloader implements ApplicationRunner {
 						.queryParam("skip", 0)
 						.queryParam("limit", 10)
 						.queryParam("include", "country")
-						.queryParam(
-								"keys",
+						.queryParam("keys",
 								"name,country,country.code,population,location,cityId,adminCode")
 						.queryParam("where", String.format("{ \"name\": \"%s\" }", missingCity))
 						.build()
@@ -91,36 +90,17 @@ public class CityDownloader implements ApplicationRunner {
 					boolean found = false;
 					Iterator<JsonNode> results = node.get("results").elements();
 					while (results.hasNext()) {
-						JsonNode city = results.next();
+						City city = mapper.treeToValue(results.next(), City.class);
 
-						long id = city.get("cityId").asLong();
-						String name = city.get("name").asText();
-						String adminCode = city.get("adminCode").asText();
-						JsonNode location = city.get("location");
-						double latitude = location.get("latitude").asDouble();
-						double longitude = location.get("longitude").asDouble();
-						long population = city.get("population").asLong();
-						String country = city.get("country").get("code").asText();
-
-						if (!found && missingCountry.equals(country)) {
-							log.info("Writing {} / {}", name, country);
-							writer.writeNext(
-									new String[]{
-											String.valueOf(id),
-											name,
-											adminCode,
-											String.valueOf(latitude),
-											String.valueOf(longitude),
-											String.valueOf(population),
-											country
-									},
-									false);
+						if (!found && missingCountry.equals(city.country().code())) {
+							log.info("Writing {} / {}", city.name(), city.country().code());
+							writer.writeNext(city.asStrings(), false);
 							found = true;
 						} else if (found) {
-							log.info("Skipping {} / {}, already found a matching city", name,
-									country);
+							log.info("Skipping {} / {}, already found a matching city", city.name(),
+									city.country().code());
 						} else {
-							log.info("Skipping {} / {}, wanted country {}", name, country,
+							log.info("Skipping {} / {}, wanted country {}", city.name(), city.country().code(),
 									missingCountry);
 						}
 					}
