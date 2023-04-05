@@ -1,4 +1,4 @@
-package uk.co.bluegecko.marine.loader.back4app.city;
+package uk.co.bluegecko.marine.loader.downloader.back4app.city;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

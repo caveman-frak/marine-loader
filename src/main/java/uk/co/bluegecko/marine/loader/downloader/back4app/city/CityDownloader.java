@@ -1,4 +1,4 @@
-package uk.co.bluegecko.marine.loader.back4app.city;
+package uk.co.bluegecko.marine.loader.downloader.back4app.city;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,8 +19,8 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
-import uk.co.bluegecko.marine.loader.back4app.core.Back4AppProperties;
-import uk.co.bluegecko.marine.loader.back4app.core.Back4AppProperties.Connection;
+import uk.co.bluegecko.marine.loader.downloader.back4app.core.Back4AppProperties;
+import uk.co.bluegecko.marine.loader.downloader.back4app.core.Back4AppProperties.Connection;
 
 /**
  * Download missing city data from Back4App.

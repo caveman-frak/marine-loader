@@ -1,4 +1,4 @@
-package uk.co.bluegecko.marine.loader.back4app;
+package uk.co.bluegecko.marine.loader.downloader.back4app;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

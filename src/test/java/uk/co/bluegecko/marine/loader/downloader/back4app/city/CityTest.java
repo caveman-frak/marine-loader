@@ -1,4 +1,4 @@
-package uk.co.bluegecko.marine.loader.back4app.city;
+package uk.co.bluegecko.marine.loader.downloader.back4app.city;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -7,8 +7,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Iterator;
 import org.junit.jupiter.api.Test;
-import uk.co.bluegecko.marine.loader.back4app.city.City.Country;
-import uk.co.bluegecko.marine.loader.back4app.city.City.Location;
+import uk.co.bluegecko.marine.loader.downloader.back4app.city.City.Country;
+import uk.co.bluegecko.marine.loader.downloader.back4app.city.City.Location;
 
 class CityTest {
 

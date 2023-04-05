@@ -1,4 +1,4 @@
-package uk.co.bluegecko.marine.loader.back4app.core;
+package uk.co.bluegecko.marine.loader.downloader.back4app.core;
 
 import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
