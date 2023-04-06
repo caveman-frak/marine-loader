@@ -16,17 +16,24 @@ class CityTest {
 			  {
 			       "results": [
 			         {
+			           "objectId": "USzGpPyQYE",
 			           "adminCode": "04",
 			           "cityId": 3040132,
 			           "country": {
-			             "code": "AD"
+			             "objectId": "sv7fjDVISU",
+			             "code": "AD",
+			             "__type": "Object",
+			             "className": "Country"
 			           },
 			           "location": {
+			             "__type": "GeoPoint",
 			             "latitude": 42.54499,
 			             "longitude": 1.51483
 			           },
 			           "name": "la Massana",
-			           "population": 7211
+			           "population": 7211,
+			           "createdAt": "2019-12-09T21:04:56.736Z",
+			           "updatedAt": "2019-12-09T21:04:56.736Z"
 			         }
 			       ]
 			  }

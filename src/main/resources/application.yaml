@@ -13,8 +13,6 @@ spring:
       enabled: always
   lifecycle:
     timeout-per-shutdown-phase: "5s"
-  main:
-    web-application-type: NONE
 
 logging:
   group:
@@ -32,3 +30,4 @@ back4app:
   application:
     id: "TGtqdBWPEXhu3nq5eqVSq5JjIIkhLFmcYtsvSAlc"
     key: "00TOggZ8Zqt5mMXu4qr5NhbSCYJR9TR6vajhlUrm"
+  limit: 50

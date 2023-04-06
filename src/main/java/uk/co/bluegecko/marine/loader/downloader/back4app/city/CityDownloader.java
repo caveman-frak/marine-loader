@@ -20,6 +20,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.co.bluegecko.marine.loader.downloader.back4app.core.Back4AppProperties;
+import uk.co.bluegecko.marine.loader.downloader.back4app.core.Back4AppProperties.Application;
 import uk.co.bluegecko.marine.loader.downloader.back4app.core.Back4AppProperties.Connection;
 
 /**
@@ -36,13 +37,15 @@ public class CityDownloader implements ApplicationRunner {
 	@Override
 	public void run(ApplicationArguments args) {
 		final Connection connection = properties.connection();
-		log.debug("Connecting to {}://{} using ID: {} and token: {}",
+		final Application application = properties.application();
+		log.info("Connecting to {}://{} with limit {}, using ID: {} and token: {}",
 				connection.scheme(), connection.host(),
-				properties.application().id(), properties.application().key());
+				properties.limit(), application.id(), application.key());
 
 		ObjectMapper mapper = new ObjectMapper();
-		List<String> missingCities =
+		List<String> missingEntries =
 				List.of(
+						"GB:London",
 						"FK:Stanley",
 						"GS:King Edward Point",
 						"IO:Diego Garcia",
@@ -60,7 +63,7 @@ public class CityDownloader implements ApplicationRunner {
 
 			writer.writeNext(City.asHeaders());
 
-			for (String missing : missingCities) {
+			for (String missing : missingEntries) {
 				var s = missing.split(":");
 				String missingCountry = s[0];
 				String missingCity = s[1];
@@ -70,8 +73,10 @@ public class CityDownloader implements ApplicationRunner {
 						.host(connection.host())
 						.path(connection.path("city"))
 						.queryParam("skip", 0)
-						.queryParam("limit", 10)
+						.queryParam("limit", properties.limit())
 						.queryParam("include", "country")
+						.queryParam("order", "-population")
+						.queryParam("count", 1)
 						.queryParam("keys",
 								"name,country,country.code,population,location,cityId,adminCode")
 						.queryParam("where", String.format("{ \"name\": \"%s\" }", missingCity))
@@ -81,11 +86,17 @@ public class CityDownloader implements ApplicationRunner {
 						.toURL();
 
 				HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-				urlConnection.setRequestProperty("X-Parse-Application-Id", properties.application().id());
-				urlConnection.setRequestProperty("X-Parse-REST-API-Key", properties.application().key());
+				urlConnection.setRequestProperty("X-Parse-Application-Id", application.id());
+				urlConnection.setRequestProperty("X-Parse-REST-API-Key", application.key());
 				try (BufferedReader reader =
 						new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
 					JsonNode node = mapper.readTree(reader);
+
+					int count = node.get("count").asInt();
+					if (count >= properties.limit()) {
+						log.warn("Correct city ({}) for {} may be missed, as only {}/{} results returned",
+								missingCity, missingCountry, properties.limit(), count);
+					}
 
 					boolean found = false;
 					Iterator<JsonNode> results = node.get("results").elements();
@@ -97,10 +108,10 @@ public class CityDownloader implements ApplicationRunner {
 							writer.writeNext(city.asStrings(), false);
 							found = true;
 						} else if (found) {
-							log.info("Skipping {} / {}, already found a matching city", city.name(),
+							log.debug("Skipping {} / {}, already found a matching city", city.name(),
 									city.country().code());
 						} else {
-							log.info("Skipping {} / {}, wanted country {}", city.name(), city.country().code(),
+							log.debug("Skipping {} / {}, wanted country {}", city.name(), city.country().code(),
 									missingCountry);
 						}
 					}

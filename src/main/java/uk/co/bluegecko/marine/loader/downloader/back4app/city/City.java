@@ -9,10 +9,12 @@ import lombok.Builder;
 public record City(@JsonProperty("cityId") long id, String name, String adminCode, Location location, long population,
                    Country country) {
 
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public record Location(double latitude, double longitude) {
 
 	}
 
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public record Country(String code) {
 
 	}
