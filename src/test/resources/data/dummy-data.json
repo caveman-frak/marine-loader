@@ -1,0 +1,200 @@
+{
+  "results": [
+    {
+      "objectId": "Q6m72cj5TR",
+      "location": {
+        "__type": "GeoPoint",
+        "latitude": 27,
+        "longitude": 30
+      },
+      "cityId": 357994,
+      "name": "Arab Republic of Egypt",
+      "population": 98423595,
+      "country": {
+        "objectId": "hFkwjKITta",
+        "code": "EG",
+        "name": "Egypt",
+        "createdAt": "2019-12-09T22:29:19.470Z",
+        "updatedAt": "2020-04-13T18:16:36.336Z",
+        "languages": {
+          "__type": "Relation",
+          "className": "Language"
+        },
+        "cities": {
+          "__type": "Relation",
+          "className": "City"
+        },
+        "timezones": {
+          "__type": "Relation",
+          "className": "Timezone_Time_Zones_Dataset"
+        },
+        "provinces": {
+          "__type": "Relation",
+          "className": "Subdivisions_States_Provinces"
+        },
+        "__type": "Object",
+        "className": "Country"
+      },
+      "adminCode": "00",
+      "createdAt": "2020-05-06T21:07:55.325Z",
+      "updatedAt": "2020-05-06T21:07:55.325Z"
+    },
+    {
+      "objectId": "oViQb9D54l",
+      "location": {
+        "__type": "GeoPoint",
+        "latitude": 42.83333,
+        "longitude": 12.83333
+      },
+      "cityId": 3175395,
+      "name": "Italian Republic",
+      "population": 60431283,
+      "country": {
+        "objectId": "hOu7Is3jvO",
+        "code": "IT",
+        "name": "Italy",
+        "createdAt": "2019-12-10T05:11:14.623Z",
+        "updatedAt": "2020-04-13T18:18:26.358Z",
+        "languages": {
+          "__type": "Relation",
+          "className": "Language"
+        },
+        "cities": {
+          "__type": "Relation",
+          "className": "City"
+        },
+        "timezones": {
+          "__type": "Relation",
+          "className": "Timezone_Time_Zones_Dataset"
+        },
+        "provinces": {
+          "__type": "Relation",
+          "className": "Subdivisions_States_Provinces"
+        },
+        "__type": "Object",
+        "className": "Country"
+      },
+      "adminCode": "00",
+      "createdAt": "2020-05-07T02:55:52.122Z",
+      "updatedAt": "2020-05-07T02:55:52.122Z"
+    },
+    {
+      "objectId": "8jGdenYC2O",
+      "location": {
+        "__type": "GeoPoint",
+        "latitude": 52.16045,
+        "longitude": -0.70312
+      },
+      "cityId": 6269131,
+      "name": "England",
+      "population": 55268067,
+      "country": {
+        "objectId": "asMYxtQNZx",
+        "code": "GB",
+        "name": "United Kingdom",
+        "createdAt": "2019-12-10T01:22:33.058Z",
+        "updatedAt": "2020-04-13T18:18:10.400Z",
+        "languages": {
+          "__type": "Relation",
+          "className": "Language"
+        },
+        "cities": {
+          "__type": "Relation",
+          "className": "City"
+        },
+        "timezones": {
+          "__type": "Relation",
+          "className": "Timezone_Time_Zones_Dataset"
+        },
+        "provinces": {
+          "__type": "Relation",
+          "className": "Subdivisions_States_Provinces"
+        },
+        "__type": "Object",
+        "className": "Country"
+      },
+      "adminCode": "ENG",
+      "createdAt": "2020-05-06T22:35:10.625Z",
+      "updatedAt": "2020-05-06T22:35:10.625Z"
+    },
+    {
+      "objectId": "ADrt3ED4Gp",
+      "location": {
+        "__type": "GeoPoint",
+        "latitude": -22,
+        "longitude": -49
+      },
+      "cityId": 3448433,
+      "name": "São Paulo",
+      "population": 41252160,
+      "country": {
+        "objectId": "qq2ryXaIYG",
+        "code": "BR",
+        "name": "Brazil",
+        "createdAt": "2019-12-09T21:15:03.703Z",
+        "updatedAt": "2020-04-13T18:18:40.930Z",
+        "languages": {
+          "__type": "Relation",
+          "className": "Language"
+        },
+        "cities": {
+          "__type": "Relation",
+          "className": "City"
+        },
+        "timezones": {
+          "__type": "Relation",
+          "className": "Timezone_Time_Zones_Dataset"
+        },
+        "provinces": {
+          "__type": "Relation",
+          "className": "Subdivisions_States_Provinces"
+        },
+        "__type": "Object",
+        "className": "Country"
+      },
+      "adminCode": "27",
+      "createdAt": "2020-05-13T09:02:43.320Z",
+      "updatedAt": "2020-05-13T09:02:43.320Z"
+    },
+    {
+      "objectId": "TlAPzAikQ9",
+      "location": {
+        "__type": "GeoPoint",
+        "latitude": 60.10867,
+        "longitude": -113.64258
+      },
+      "cityId": 6251999,
+      "name": "Canada",
+      "population": 37058856,
+      "country": {
+        "objectId": "mTtBWeeHCo",
+        "code": "CA",
+        "name": "Canada",
+        "createdAt": "2019-12-09T21:20:10.062Z",
+        "updatedAt": "2020-04-13T18:19:24.219Z",
+        "languages": {
+          "__type": "Relation",
+          "className": "Language"
+        },
+        "cities": {
+          "__type": "Relation",
+          "className": "City"
+        },
+        "timezones": {
+          "__type": "Relation",
+          "className": "Timezone_Time_Zones_Dataset"
+        },
+        "provinces": {
+          "__type": "Relation",
+          "className": "Subdivisions_States_Provinces"
+        },
+        "__type": "Object",
+        "className": "Country"
+      },
+      "adminCode": "00",
+      "createdAt": "2020-05-14T13:12:18.771Z",
+      "updatedAt": "2020-05-14T13:12:18.771Z"
+    }
+  ],
+  "count": 1362963
+}
