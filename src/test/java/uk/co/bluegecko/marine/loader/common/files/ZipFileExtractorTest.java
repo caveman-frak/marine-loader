@@ -62,7 +62,7 @@ class ZipFileExtractorTest {
 			assertThat(extracted)
 					.as("CSV mask")
 					.isPresent();
-			try (BufferedReader reader = new BufferedReader(new InputStreamReader(extracted.get()))) {
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(extracted.orElseThrow()))) {
 				assertThat(reader.lines().toList())
 						.hasSize(4);
 			}
@@ -79,7 +79,7 @@ class ZipFileExtractorTest {
 			assertThat(extracted)
 					.as("JSON mask")
 					.isPresent();
-			try (BufferedReader reader = new BufferedReader(new InputStreamReader(extracted.get()))) {
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(extracted.orElseThrow()))) {
 				assertThat(reader.lines().toList())
 						.hasSize(200);
 			}
