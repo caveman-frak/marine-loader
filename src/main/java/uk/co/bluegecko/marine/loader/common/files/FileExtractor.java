@@ -1,12 +1,11 @@
 package uk.co.bluegecko.marine.loader.common.files;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Optional;
-import java.util.regex.Pattern;
+import org.springframework.util.MultiValueMap;
 
-public interface FileExtractor<T> {
+public interface FileExtractor<I, T> {
 
-	Optional<InputStream> extract(T in, Pattern mask) throws IOException;
+	MultiValueMap<? extends Enum, ParseResult> extract(I in,
+			FileParser<T>... parsers) throws IOException;
 
 }
