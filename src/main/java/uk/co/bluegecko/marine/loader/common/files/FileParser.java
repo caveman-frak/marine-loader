@@ -6,7 +6,7 @@ public interface FileParser<I> {
 
 	ParseResult parse(String fileName, I in);
 
-	Enum type();
+	Enum<?> type();
 
 	Pattern mask();
 

@@ -18,15 +18,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-@SuppressWarnings("rawtypes")
 @Slf4j
 public class ZipFileExtractor implements FileExtractor<Path, InputStream> {
 
-	@SuppressWarnings("unchecked")
+	@SafeVarargs
 	@Override
-	public MultiValueMap<Enum, ParseResult> extract(Path path, FileParser<InputStream>... parsers)
+	public final MultiValueMap<Enum<?>, ParseResult> extract(Path path,
+			final FileParser<InputStream>... parsers)
 			throws IOException {
-		MultiValueMap<Enum, ParseResult> results = new LinkedMultiValueMap<>();
+		MultiValueMap<Enum<?>, ParseResult> results = new LinkedMultiValueMap<>();
 		Map<Pattern, FileParser<InputStream>> masks =
 				Stream.of(parsers).collect(Collectors.toMap(FileParser::mask,
 						p -> p));
@@ -44,7 +44,7 @@ public class ZipFileExtractor implements FileExtractor<Path, InputStream> {
 		return results;
 	}
 
-	private void processFile(MultiValueMap<Enum, ParseResult> results,
+	private void processFile(MultiValueMap<Enum<?>, ParseResult> results,
 			Map<Pattern, FileParser<InputStream>> masks,
 			Path file) {
 		String name = file.getFileName().toString();
@@ -60,12 +60,14 @@ public class ZipFileExtractor implements FileExtractor<Path, InputStream> {
 		);
 	}
 
-	public MultiValueMap<Enum, ParseResult> extract(URI uri, FileParser<InputStream>... parsers)
-			throws IOException, URISyntaxException {
+	@SafeVarargs
+	public final MultiValueMap<Enum<?>, ParseResult> extract(URI uri, FileParser<InputStream>... parsers)
+			throws IOException {
 		return extract(Paths.get(uri), parsers);
 	}
 
-	public MultiValueMap<Enum, ParseResult> extract(URL url, FileParser<InputStream>... parsers)
+	@SafeVarargs
+	public final MultiValueMap<Enum<?>, ParseResult> extract(URL url, FileParser<InputStream>... parsers)
 			throws IOException, URISyntaxException {
 		return extract(url.toURI(), parsers);
 	}

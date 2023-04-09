@@ -107,7 +107,7 @@ public class AbstractExtractorTest {
 
 	protected static class DummyParser extends AbstractFileParser<InputStream> {
 
-		protected DummyParser(Enum type, Pattern mask) {
+		protected DummyParser(Enum<?> type, Pattern mask) {
 			super(type, mask);
 		}
 
