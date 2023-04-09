@@ -1,6 +1,5 @@
 package uk.co.bluegecko.marine.loader.common.files;
 
-import static java.lang.ClassLoader.getSystemResource;
 import static org.assertj.core.api.Assertions.allOf;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.co.bluegecko.marine.test.jassert.Conditions.extracted;
@@ -9,7 +8,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -19,7 +17,7 @@ class ZipFileExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractCsvFile() throws IOException, URISyntaxException {
-		Path path = Paths.get(getSystemResource("data/dummy-data.zip").toURI());
+		Path path = getZipPath();
 
 		var resultMap = new ZipFileExtractor().extract(path, csvParser());
 		List<ParseResult> results = resultMap.get(Dummy.CSV);
@@ -35,7 +33,7 @@ class ZipFileExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractCsvFileFromResource() throws IOException, URISyntaxException {
-		URL url = getSystemResource("data/dummy-data.zip");
+		URL url = getZipUrl();
 
 		var resultMap = new ZipFileExtractor().extract(url, csvParser());
 		List<ParseResult> results = resultMap.get(Dummy.CSV);
@@ -51,7 +49,7 @@ class ZipFileExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractJsonFile() throws IOException, URISyntaxException {
-		Path path = Paths.get(getSystemResource("data/dummy-data.zip").toURI());
+		Path path = getZipPath();
 
 		var resultMap = new ZipFileExtractor().extract(path, jsonParser());
 		List<ParseResult> results = resultMap.get(Dummy.JSON);
@@ -67,7 +65,7 @@ class ZipFileExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractTxtFile() throws IOException, URISyntaxException {
-		Path path = Paths.get(getSystemResource("data/dummy-data.zip").toURI());
+		Path path = getZipPath();
 
 		var resultMap = new ZipFileExtractor().extract(path, textParser());
 		List<ParseResult> results = resultMap.get(Dummy.TEXT);
@@ -78,7 +76,7 @@ class ZipFileExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractAllFile() throws IOException, URISyntaxException {
-		Path path = Paths.get(getSystemResource("data/dummy-data.zip").toURI());
+		Path path = getZipPath();
 
 		var resultMap = new ZipFileExtractor().extract(path, csvParser(), jsonParser(), textParser());
 		assertThat(resultMap.get(Dummy.CSV))

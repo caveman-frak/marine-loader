@@ -1,6 +1,5 @@
 package uk.co.bluegecko.marine.loader.common.files;
 
-import static java.lang.ClassLoader.getSystemResourceAsStream;
 import static org.assertj.core.api.Assertions.allOf;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.co.bluegecko.marine.test.jassert.Conditions.extracted;
@@ -14,8 +13,7 @@ class ZipStreamExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractCsvFile() throws IOException {
-		try (ZipInputStream zin = new ZipInputStream(
-				getSystemResourceAsStream("data/dummy-data.zip"))) {
+		try (ZipInputStream zin = getZipInputStream()) {
 
 			var resultMap = new ZipStreamExtractor()
 					.extract(zin, csvParser());
@@ -33,8 +31,7 @@ class ZipStreamExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractJsonFile() throws IOException {
-		try (ZipInputStream zin = new ZipInputStream(
-				getSystemResourceAsStream("data/dummy-data.zip"))) {
+		try (ZipInputStream zin = getZipInputStream()) {
 
 			var resultMap = new ZipStreamExtractor()
 					.extract(zin, jsonParser());
@@ -52,8 +49,7 @@ class ZipStreamExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractTxtFile() throws IOException {
-		try (ZipInputStream zin = new ZipInputStream(
-				getSystemResourceAsStream("data/dummy-data.zip"))) {
+		try (ZipInputStream zin = getZipInputStream()) {
 
 			var resultMap = new ZipStreamExtractor()
 					.extract(zin, textParser());
@@ -66,8 +62,7 @@ class ZipStreamExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractAllFile() throws IOException {
-		try (ZipInputStream zin = new ZipInputStream(
-				getSystemResourceAsStream("data/dummy-data.zip"))) {
+		try (ZipInputStream zin = getZipInputStream()) {
 
 			var resultMap = new ZipStreamExtractor()
 					.extract(zin, csvParser(), jsonParser(), textParser());
