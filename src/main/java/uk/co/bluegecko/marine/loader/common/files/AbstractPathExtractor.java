@@ -29,7 +29,7 @@ public abstract class AbstractPathExtractor implements FileExtractor<Path, Input
 		return results;
 	}
 
-	protected MultiValueMap<Enum<?>, ParseResult> processFile(final Path file,
+	protected void processFile(final Path file,
 			final MultiValueMap<Enum<?>, ParseResult> results,
 			final Map<Pattern, FileParser<InputStream>> masks) {
 		String name = file.getFileName().toString();
@@ -43,7 +43,6 @@ public abstract class AbstractPathExtractor implements FileExtractor<Path, Input
 					}
 				}
 		);
-		return results;
 	}
 
 	@SafeVarargs
