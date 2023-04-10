@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 class DirectoryExtractorTest extends AbstractExtractorTest {
 
 	@Test
-	void testExtractCsvFile() throws URISyntaxException {
-		var resultMap = new DirectoryExtractor().extract(getDirPath(), csvParser());
+	void testExtractCsvFileFromDirectory() throws URISyntaxException {
+		var resultMap = new DirectoryExtractor().extract(getPath(data()), csvParser());
 		List<ParseResult> results = resultMap.get(Dummy.CSV);
 		assertThat(results)
 				.as("CSV parser")
@@ -26,8 +26,8 @@ class DirectoryExtractorTest extends AbstractExtractorTest {
 	}
 
 	@Test
-	void testExtractCsvFileFromResource() throws IOException, URISyntaxException {
-		var resultMap = new DirectoryExtractor().extract(getDirUrl(), csvParser());
+	void testExtractCsvFileFromDirectoryResource() throws IOException, URISyntaxException {
+		var resultMap = new DirectoryExtractor().extract(getUrl(data()), csvParser());
 		List<ParseResult> results = resultMap.get(Dummy.CSV);
 		assertThat(results)
 				.as("CSV parser")
@@ -40,8 +40,8 @@ class DirectoryExtractorTest extends AbstractExtractorTest {
 	}
 
 	@Test
-	void testExtractJsonFile() throws URISyntaxException {
-		var resultMap = new DirectoryExtractor().extract(getDirPath(), jsonParser());
+	void testExtractJsonFileFromDirectory() throws URISyntaxException {
+		var resultMap = new DirectoryExtractor().extract(getPath(data()), jsonParser());
 		List<ParseResult> results = resultMap.get(Dummy.JSON);
 		assertThat(results)
 				.as("JSON parser")
@@ -54,8 +54,8 @@ class DirectoryExtractorTest extends AbstractExtractorTest {
 	}
 
 	@Test
-	void testExtractTxtFile() throws URISyntaxException {
-		var resultMap = new DirectoryExtractor().extract(getDirPath(), textParser());
+	void testExtractTxtFileFromDirectory() throws URISyntaxException {
+		var resultMap = new DirectoryExtractor().extract(getPath(data()), textParser());
 		List<ParseResult> results = resultMap.get(Dummy.TEXT);
 		assertThat(results)
 				.as("Text parser")
@@ -63,8 +63,49 @@ class DirectoryExtractorTest extends AbstractExtractorTest {
 	}
 
 	@Test
-	void testExtractAllFile() throws URISyntaxException {
-		var resultMap = new DirectoryExtractor().extract(getDirPath(), csvParser(), jsonParser(), textParser());
+	void testExtractAllFilesFromDirectory() throws URISyntaxException {
+		var resultMap = new DirectoryExtractor().extract(getPath(data()),
+				csvParser(), jsonParser(), textParser());
+		assertThat(resultMap.get(Dummy.CSV))
+				.as("CSV parser")
+				.isNotNull()
+				.hasSize(1);
+		assertThat(resultMap.get(Dummy.JSON))
+				.as("JSON parser")
+				.isNotNull()
+				.hasSize(1);
+		assertThat(resultMap.get(Dummy.TEXT))
+				.as("Text parser")
+				.isNull();
+	}
+
+	@Test
+	void testExtractCsvFileFromPath() throws URISyntaxException {
+		var resultMap = new DirectoryExtractor().extract(getPath(data(), csv()), csvParser());
+		List<ParseResult> results = resultMap.get(Dummy.CSV);
+		assertThat(results)
+				.as("CSV parser")
+				.isNotNull()
+				.hasSize(1);
+
+		assertThat(results.get(0))
+				.is(allOf(extracted(ParseResult::fileName, "file name", "dummy-data.csv"),
+						extracted(r -> r.values().size(), "value", 4)));
+	}
+
+	@Test
+	void testExtractTxtFileFromPath() throws URISyntaxException {
+		var resultMap = new DirectoryExtractor().extract(getPath(data(), csv()), textParser());
+		List<ParseResult> results = resultMap.get(Dummy.TEXT);
+		assertThat(results)
+				.as("Text parser")
+				.isNull();
+	}
+
+	@Test
+	void testExtractAllFilesFromNestedDirectory() throws URISyntaxException {
+		var resultMap = new DirectoryExtractor().extract(getPath(nested()),
+				csvParser(), jsonParser(), textParser());
 		assertThat(resultMap.get(Dummy.CSV))
 				.as("CSV parser")
 				.isNotNull()

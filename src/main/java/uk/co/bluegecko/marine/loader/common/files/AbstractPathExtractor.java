@@ -17,7 +17,8 @@ import org.springframework.util.MultiValueMap;
 
 public abstract class AbstractPathExtractor implements FileExtractor<Path, InputStream> {
 
-	protected void walkPath(final Path path, final MultiValueMap<Enum<?>, ParseResult> results,
+	protected MultiValueMap<Enum<?>, ParseResult> walkPath(final Path path,
+			final MultiValueMap<Enum<?>, ParseResult> results,
 			final Map<Pattern, FileParser<InputStream>> masks) {
 		try (Stream<Path> files = Files.walk(path)) {
 			files.filter(f -> f.getFileName() != null).forEach(
@@ -25,9 +26,11 @@ public abstract class AbstractPathExtractor implements FileExtractor<Path, Input
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+		return results;
 	}
 
-	protected void processFile(final Path file, final MultiValueMap<Enum<?>, ParseResult> results,
+	protected MultiValueMap<Enum<?>, ParseResult> processFile(final Path file,
+			final MultiValueMap<Enum<?>, ParseResult> results,
 			final Map<Pattern, FileParser<InputStream>> masks) {
 		String name = file.getFileName().toString();
 		masks.forEach((k, v) -> {
@@ -40,6 +43,7 @@ public abstract class AbstractPathExtractor implements FileExtractor<Path, Input
 					}
 				}
 		);
+		return results;
 	}
 
 	@SafeVarargs

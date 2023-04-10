@@ -13,8 +13,7 @@ class ZipStreamExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractCsvFile() throws IOException {
-		try (ZipInputStream zin = getZipInputStream()) {
-
+		try (ZipInputStream zin = getZipInputStream(data())) {
 			var resultMap = new ZipStreamExtractor()
 					.extract(zin, csvParser());
 			List<ParseResult> results = resultMap.get(Dummy.CSV);
@@ -31,8 +30,7 @@ class ZipStreamExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractJsonFile() throws IOException {
-		try (ZipInputStream zin = getZipInputStream()) {
-
+		try (ZipInputStream zin = getZipInputStream(data())) {
 			var resultMap = new ZipStreamExtractor()
 					.extract(zin, jsonParser());
 			List<ParseResult> results = resultMap.get(Dummy.JSON);
@@ -49,8 +47,7 @@ class ZipStreamExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractTxtFile() throws IOException {
-		try (ZipInputStream zin = getZipInputStream()) {
-
+		try (ZipInputStream zin = getZipInputStream(data())) {
 			var resultMap = new ZipStreamExtractor()
 					.extract(zin, textParser());
 			List<ParseResult> results = resultMap.get(Dummy.TEXT);
@@ -62,8 +59,26 @@ class ZipStreamExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractAllFile() throws IOException {
-		try (ZipInputStream zin = getZipInputStream()) {
+		try (ZipInputStream zin = getZipInputStream(data())) {
+			var resultMap = new ZipStreamExtractor()
+					.extract(zin, csvParser(), jsonParser(), textParser());
+			assertThat(resultMap.get(Dummy.CSV))
+					.as("CSV parser")
+					.isNotNull()
+					.hasSize(1);
+			assertThat(resultMap.get(Dummy.JSON))
+					.as("JSON parser")
+					.isNotNull()
+					.hasSize(1);
+			assertThat(resultMap.get(Dummy.TEXT))
+					.as("Text parser")
+					.isNull();
+		}
+	}
 
+	@Test
+	void testExtractAllNestedFile() throws IOException {
+		try (ZipInputStream zin = getZipInputStream(nested())) {
 			var resultMap = new ZipStreamExtractor()
 					.extract(zin, csvParser(), jsonParser(), textParser());
 			assertThat(resultMap.get(Dummy.CSV))

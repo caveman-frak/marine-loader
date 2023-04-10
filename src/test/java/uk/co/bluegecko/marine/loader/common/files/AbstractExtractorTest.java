@@ -30,8 +30,7 @@ public class AbstractExtractorTest {
 	@Tag("sanity-check")
 	@DisplayName("Sanity check the CSV file")
 	void checkCsvFileContents() throws IOException {
-		try (BufferedReader reader = getBufferedReader("csv")) {
-
+		try (BufferedReader reader = getBufferedReader(data(), csv())) {
 			assertThat(reader.readLine())
 					.startsWith("\"id\",")
 					.endsWith(",\"country\"");
@@ -42,8 +41,7 @@ public class AbstractExtractorTest {
 	@Tag("sanity-check")
 	@DisplayName("Sanity check the JSON file")
 	void checkJsonFileContents() throws IOException {
-		try (BufferedReader reader = getBufferedReader("json")) {
-
+		try (BufferedReader reader = getBufferedReader(data(), json())) {
 			assertThat(reader.readLine())
 					.isEqualTo("{");
 		}
@@ -53,8 +51,7 @@ public class AbstractExtractorTest {
 	@Tag("sanity-check")
 	@DisplayName("Sanity check the ZIP file")
 	void checkRawZipFileContents() throws IOException {
-		try (InputStream in = getInputStream("zip")) {
-
+		try (InputStream in = getInputStream(data(), zip())) {
 			assertThat(in.readNBytes(4)).as("Header 'PK♥♦'")
 					.isEqualTo(new byte[]{80, 75, 3, 4});
 			assertThat(in.readNBytes(2)).as("Version .0")
@@ -70,8 +67,7 @@ public class AbstractExtractorTest {
 	@Tag("sanity-check")
 	@DisplayName("Sanity check the ZIP file contents")
 	void checkZipFileContents() throws IOException {
-		try (ZipInputStream zin = getZipInputStream()) {
-
+		try (ZipInputStream zin = getZipInputStream(data())) {
 			// CSV file
 			assertThat(zin.getNextEntry())
 					.has(extracted(ZipEntry::getName, "file name of", "dummy-data.csv"));
@@ -79,7 +75,6 @@ public class AbstractExtractorTest {
 			assertThat(csvReader.lines().toList())
 					.hasSize(4);
 			zin.closeEntry();
-
 			// JSON file
 			assertThat(zin.getNextEntry())
 					.has(extracted(ZipEntry::getName, "file name of", "dummy-data.json"));
@@ -90,32 +85,56 @@ public class AbstractExtractorTest {
 		}
 	}
 
-	protected ZipInputStream getZipInputStream() {
-		return new ZipInputStream(getInputStream("zip"));
+	protected InputStream getInputStream(String dir, String suffix) {
+		return Objects.requireNonNull(getSystemResourceAsStream(dir + "/" + file() + "." + suffix));
 	}
 
-	protected static InputStream getInputStream(String suffix) {
-		return Objects.requireNonNull(getSystemResourceAsStream("data/dummy-data." + suffix));
+	protected ZipInputStream getZipInputStream(String dir) {
+		return new ZipInputStream(getInputStream(dir, zip()));
 	}
 
-	protected static BufferedReader getBufferedReader(String suffix) {
-		return new BufferedReader(new InputStreamReader(getInputStream(suffix)));
+	protected BufferedReader getBufferedReader(String dir, String suffix) {
+		return new BufferedReader(new InputStreamReader(getInputStream(dir, suffix)));
 	}
 
-	protected URL getZipUrl() {
-		return getSystemResource("data/dummy-data.zip");
+	protected URL getUrl(String dir, String suffix) {
+		return getSystemResource(dir + "/" + file() + "." + suffix);
 	}
 
-	protected Path getZipPath() throws URISyntaxException {
-		return Paths.get(getZipUrl().toURI());
+	protected Path getPath(String dir, String suffix) throws URISyntaxException {
+		return Paths.get(getUrl(dir, suffix).toURI());
 	}
 
-	protected Path getDirPath() throws URISyntaxException {
-		return Paths.get(getDirUrl().toURI());
+	protected URL getUrl(String dir) {
+		return getSystemResource(dir);
 	}
 
-	protected URL getDirUrl() {
-		return getSystemResource("data");
+	protected Path getPath(String dir) throws URISyntaxException {
+		return Paths.get(getUrl(dir).toURI());
+	}
+
+	protected String nested() {
+		return "nested-data";
+	}
+
+	protected String data() {
+		return "data";
+	}
+
+	private String file() {
+		return "dummy-data";
+	}
+
+	protected String zip() {
+		return "zip";
+	}
+
+	protected String csv() {
+		return "csv";
+	}
+
+	protected String json() {
+		return "json";
 	}
 
 	protected static DummyParser csvParser() {

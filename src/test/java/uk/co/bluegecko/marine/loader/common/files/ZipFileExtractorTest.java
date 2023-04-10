@@ -15,7 +15,7 @@ class ZipFileExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractCsvFile() throws IOException, URISyntaxException {
-		var resultMap = new ZipFileExtractor().extract(getZipPath(), csvParser());
+		var resultMap = new ZipFileExtractor().extract(getPath(data(), zip()), csvParser());
 		List<ParseResult> results = resultMap.get(Dummy.CSV);
 		assertThat(results)
 				.as("CSV parser")
@@ -29,7 +29,7 @@ class ZipFileExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractCsvFileFromResource() throws IOException, URISyntaxException {
-		var resultMap = new ZipFileExtractor().extract(getZipUrl(), csvParser());
+		var resultMap = new ZipFileExtractor().extract(getPath(data(), zip()), csvParser());
 		List<ParseResult> results = resultMap.get(Dummy.CSV);
 		assertThat(results)
 				.as("CSV parser")
@@ -43,7 +43,7 @@ class ZipFileExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractJsonFile() throws IOException, URISyntaxException {
-		var resultMap = new ZipFileExtractor().extract(getZipPath(), jsonParser());
+		var resultMap = new ZipFileExtractor().extract(getPath(data(), zip()), jsonParser());
 		List<ParseResult> results = resultMap.get(Dummy.JSON);
 		assertThat(results)
 				.as("JSON parser")
@@ -57,7 +57,7 @@ class ZipFileExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractTxtFile() throws IOException, URISyntaxException {
-		var resultMap = new ZipFileExtractor().extract(getZipPath(), textParser());
+		var resultMap = new ZipFileExtractor().extract(getPath(data(), zip()), textParser());
 		List<ParseResult> results = resultMap.get(Dummy.TEXT);
 		assertThat(results)
 				.as("Text parser")
@@ -66,7 +66,25 @@ class ZipFileExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractAllFile() throws IOException, URISyntaxException {
-		var resultMap = new ZipFileExtractor().extract(getZipPath(), csvParser(), jsonParser(), textParser());
+		var resultMap = new ZipFileExtractor().extract(getPath(data(), zip()),
+				csvParser(), jsonParser(), textParser());
+		assertThat(resultMap.get(Dummy.CSV))
+				.as("CSV parser")
+				.isNotNull()
+				.hasSize(1);
+		assertThat(resultMap.get(Dummy.JSON))
+				.as("JSON parser")
+				.isNotNull()
+				.hasSize(1);
+		assertThat(resultMap.get(Dummy.TEXT))
+				.as("Text parser")
+				.isNull();
+	}
+
+	@Test
+	void testExtractAllNestedFile() throws IOException, URISyntaxException {
+		var resultMap = new ZipFileExtractor().extract(getPath(nested(), zip()),
+				csvParser(), jsonParser(), textParser());
 		assertThat(resultMap.get(Dummy.CSV))
 				.as("CSV parser")
 				.isNotNull()

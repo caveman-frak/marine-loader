@@ -12,11 +12,7 @@ public class DirectoryExtractor extends AbstractPathExtractor {
 	@Override
 	public final MultiValueMap<Enum<?>, ParseResult> extract(final Path path,
 			final FileParser<InputStream>... parsers) {
-		final var results = results();
-
-		walkPath(path, results, masks(parsers));
-
-		return results;
+		return walkPath(path, results(), masks(parsers));
 	}
 
 }
