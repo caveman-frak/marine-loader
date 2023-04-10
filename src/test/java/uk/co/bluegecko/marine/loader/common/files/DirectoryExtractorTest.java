@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 class DirectoryExtractorTest extends AbstractExtractorTest {
 
 	@Test
-	void testExtractCsvFile() throws IOException, URISyntaxException {
+	void testExtractCsvFile() throws URISyntaxException {
 		var resultMap = new DirectoryExtractor().extract(getDirPath(), csvParser());
 		List<ParseResult> results = resultMap.get(Dummy.CSV);
 		assertThat(results)
@@ -40,7 +40,7 @@ class DirectoryExtractorTest extends AbstractExtractorTest {
 	}
 
 	@Test
-	void testExtractJsonFile() throws IOException, URISyntaxException {
+	void testExtractJsonFile() throws URISyntaxException {
 		var resultMap = new DirectoryExtractor().extract(getDirPath(), jsonParser());
 		List<ParseResult> results = resultMap.get(Dummy.JSON);
 		assertThat(results)
@@ -54,7 +54,7 @@ class DirectoryExtractorTest extends AbstractExtractorTest {
 	}
 
 	@Test
-	void testExtractTxtFile() throws IOException, URISyntaxException {
+	void testExtractTxtFile() throws URISyntaxException {
 		var resultMap = new DirectoryExtractor().extract(getDirPath(), textParser());
 		List<ParseResult> results = resultMap.get(Dummy.TEXT);
 		assertThat(results)
@@ -63,7 +63,7 @@ class DirectoryExtractorTest extends AbstractExtractorTest {
 	}
 
 	@Test
-	void testExtractAllFile() throws IOException, URISyntaxException {
+	void testExtractAllFile() throws URISyntaxException {
 		var resultMap = new DirectoryExtractor().extract(getDirPath(), csvParser(), jsonParser(), textParser());
 		assertThat(resultMap.get(Dummy.CSV))
 				.as("CSV parser")
