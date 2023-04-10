@@ -110,6 +110,14 @@ public class AbstractExtractorTest {
 		return Paths.get(getZipUrl().toURI());
 	}
 
+	protected Path getDirPath() throws URISyntaxException {
+		return Paths.get(getDirUrl().toURI());
+	}
+
+	protected URL getDirUrl() {
+		return getSystemResource("data");
+	}
+
 	protected static DummyParser csvParser() {
 		return new DummyParser(Dummy.CSV, Pattern.compile("(.+)\\.csv"));
 	}
@@ -143,5 +151,5 @@ public class AbstractExtractorTest {
 					List.of());
 		}
 	}
-	
+
 }

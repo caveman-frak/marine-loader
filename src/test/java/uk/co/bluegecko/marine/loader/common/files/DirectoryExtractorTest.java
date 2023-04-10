@@ -7,15 +7,13 @@ import static uk.co.bluegecko.marine.test.jassert.Conditions.extracted;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
-@Slf4j
-class ZipFileExtractorTest extends AbstractExtractorTest {
+class DirectoryExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractCsvFile() throws IOException, URISyntaxException {
-		var resultMap = new ZipFileExtractor().extract(getZipPath(), csvParser());
+		var resultMap = new DirectoryExtractor().extract(getDirPath(), csvParser());
 		List<ParseResult> results = resultMap.get(Dummy.CSV);
 		assertThat(results)
 				.as("CSV parser")
@@ -29,7 +27,7 @@ class ZipFileExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractCsvFileFromResource() throws IOException, URISyntaxException {
-		var resultMap = new ZipFileExtractor().extract(getZipUrl(), csvParser());
+		var resultMap = new DirectoryExtractor().extract(getDirUrl(), csvParser());
 		List<ParseResult> results = resultMap.get(Dummy.CSV);
 		assertThat(results)
 				.as("CSV parser")
@@ -43,7 +41,7 @@ class ZipFileExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractJsonFile() throws IOException, URISyntaxException {
-		var resultMap = new ZipFileExtractor().extract(getZipPath(), jsonParser());
+		var resultMap = new DirectoryExtractor().extract(getDirPath(), jsonParser());
 		List<ParseResult> results = resultMap.get(Dummy.JSON);
 		assertThat(results)
 				.as("JSON parser")
@@ -57,7 +55,7 @@ class ZipFileExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractTxtFile() throws IOException, URISyntaxException {
-		var resultMap = new ZipFileExtractor().extract(getZipPath(), textParser());
+		var resultMap = new DirectoryExtractor().extract(getDirPath(), textParser());
 		List<ParseResult> results = resultMap.get(Dummy.TEXT);
 		assertThat(results)
 				.as("Text parser")
@@ -66,7 +64,7 @@ class ZipFileExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractAllFile() throws IOException, URISyntaxException {
-		var resultMap = new ZipFileExtractor().extract(getZipPath(), csvParser(), jsonParser(), textParser());
+		var resultMap = new DirectoryExtractor().extract(getDirPath(), csvParser(), jsonParser(), textParser());
 		assertThat(resultMap.get(Dummy.CSV))
 				.as("CSV parser")
 				.isNotNull()

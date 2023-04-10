@@ -2,12 +2,12 @@ package uk.co.bluegecko.marine.loader.common.files;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.MultiValueMap;
 
-public class ZipFileExtractor extends AbstractPathExtractor {
+@Slf4j
+public class DirectoryExtractor extends AbstractPathExtractor {
 
 	@SafeVarargs
 	@Override
@@ -15,13 +15,9 @@ public class ZipFileExtractor extends AbstractPathExtractor {
 			final FileParser<InputStream>... parsers)
 			throws IOException {
 		var results = results();
-		var masks = masks(parsers);
 
-		try (FileSystem zipFile = FileSystems.newFileSystem(path)) {
-			zipFile.getRootDirectories().forEach(root -> {
-				walkPath(root, results, masks);
-			});
-		}
+		walkPath(path, results, masks(parsers));
+
 		return results;
 	}
 
