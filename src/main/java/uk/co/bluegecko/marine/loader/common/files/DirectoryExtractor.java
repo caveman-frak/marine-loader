@@ -10,9 +10,9 @@ public class DirectoryExtractor extends AbstractPathExtractor {
 
 	@SafeVarargs
 	@Override
-	public final MultiValueMap<Enum<?>, ParseResult> extract(Path path,
+	public final MultiValueMap<Enum<?>, ParseResult> extract(final Path path,
 			final FileParser<InputStream>... parsers) {
-		var results = results();
+		final var results = results();
 
 		walkPath(path, results, masks(parsers));
 

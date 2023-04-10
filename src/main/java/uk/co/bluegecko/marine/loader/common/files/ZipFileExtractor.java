@@ -11,11 +11,11 @@ public class ZipFileExtractor extends AbstractPathExtractor {
 
 	@SafeVarargs
 	@Override
-	public final MultiValueMap<Enum<?>, ParseResult> extract(Path path,
+	public final MultiValueMap<Enum<?>, ParseResult> extract(final Path path,
 			final FileParser<InputStream>... parsers)
 			throws IOException {
-		var results = results();
-		var masks = masks(parsers);
+		final var results = results();
+		final var masks = masks(parsers);
 
 		try (FileSystem zipFile = FileSystems.newFileSystem(path)) {
 			zipFile.getRootDirectories().forEach(root -> walkPath(root, results, masks));

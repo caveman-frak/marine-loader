@@ -17,19 +17,18 @@ import org.springframework.util.MultiValueMap;
 
 public abstract class AbstractPathExtractor implements FileExtractor<Path, InputStream> {
 
-	protected void walkPath(Path path, MultiValueMap<Enum<?>, ParseResult> results,
-			Map<Pattern, FileParser<InputStream>> masks) {
+	protected void walkPath(final Path path, final MultiValueMap<Enum<?>, ParseResult> results,
+			final Map<Pattern, FileParser<InputStream>> masks) {
 		try (Stream<Path> files = Files.walk(path)) {
 			files.filter(f -> f.getFileName() != null).forEach(
-					file -> processFile(results, masks, file));
+					file -> processFile(file, results, masks));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	protected void processFile(MultiValueMap<Enum<?>, ParseResult> results,
-			Map<Pattern, FileParser<InputStream>> masks,
-			Path file) {
+	protected void processFile(final Path file, final MultiValueMap<Enum<?>, ParseResult> results,
+			final Map<Pattern, FileParser<InputStream>> masks) {
 		String name = file.getFileName().toString();
 		masks.forEach((k, v) -> {
 					if (k.matcher(name).find()) {
@@ -44,18 +43,18 @@ public abstract class AbstractPathExtractor implements FileExtractor<Path, Input
 	}
 
 	@SafeVarargs
-	public final MultiValueMap<Enum<?>, ParseResult> extract(URI uri, FileParser<InputStream>... parsers)
+	public final MultiValueMap<Enum<?>, ParseResult> extract(final URI uri, final FileParser<InputStream>... parsers)
 			throws IOException {
 		return extract(Paths.get(uri), parsers);
 	}
 
 	@SafeVarargs
-	public final MultiValueMap<Enum<?>, ParseResult> extract(URL url, FileParser<InputStream>... parsers)
+	public final MultiValueMap<Enum<?>, ParseResult> extract(final URL url, final FileParser<InputStream>... parsers)
 			throws IOException, URISyntaxException {
 		return extract(url.toURI(), parsers);
 	}
 
-	protected Map<Pattern, FileParser<InputStream>> masks(FileParser<InputStream>[] parsers) {
+	protected Map<Pattern, FileParser<InputStream>> masks(final FileParser<InputStream>[] parsers) {
 		return Stream.of(parsers).collect(Collectors.toMap(FileParser::mask, p -> p));
 	}
 

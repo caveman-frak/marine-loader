@@ -5,7 +5,7 @@ import org.springframework.util.MultiValueMap;
 
 public interface FileExtractor<I, T> {
 
-	MultiValueMap<Enum<?>, ParseResult> extract(I in,
+	MultiValueMap<Enum<?>, ParseResult> extract(final I in,
 			final FileParser<T>... parsers) throws IOException;
 
 }

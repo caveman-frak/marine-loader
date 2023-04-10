@@ -7,7 +7,7 @@ public abstract class AbstractFileParser<I> implements FileParser<I> {
 	private final Enum<?> type;
 	private final Pattern mask;
 
-	protected AbstractFileParser(Enum<?> type, Pattern mask) {
+	protected AbstractFileParser(final Enum<?> type, final Pattern mask) {
 		this.type = type;
 		this.mask = mask;
 	}

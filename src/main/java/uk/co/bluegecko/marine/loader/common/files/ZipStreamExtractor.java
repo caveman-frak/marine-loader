@@ -13,11 +13,11 @@ public class ZipStreamExtractor implements FileExtractor<ZipInputStream, InputSt
 
 	@SafeVarargs
 	@Override
-	public final MultiValueMap<Enum<?>, ParseResult> extract(ZipInputStream in,
-			FileParser<InputStream>... parsers)
+	public final MultiValueMap<Enum<?>, ParseResult> extract(final ZipInputStream in,
+			final FileParser<InputStream>... parsers)
 			throws IOException {
-		var results = new LinkedMultiValueMap<Enum<?>, ParseResult>();
-		var masks = Stream.of(parsers).collect(Collectors.toMap(FileParser::mask, p -> p));
+		final var results = new LinkedMultiValueMap<Enum<?>, ParseResult>();
+		final var masks = Stream.of(parsers).collect(Collectors.toMap(FileParser::mask, p -> p));
 
 		ZipEntry entry = in.getNextEntry();
 		while (entry != null) {
