@@ -5,6 +5,7 @@ import org.springframework.util.MultiValueMap;
 
 public interface FileExtractor<I, T> {
 
+	@SuppressWarnings("unchecked")
 	MultiValueMap<Enum<?>, ParseResult> extract(final I in,
 			final FileParser<T>... parsers) throws IOException;
 
