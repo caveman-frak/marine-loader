@@ -18,9 +18,7 @@ public class ZipFileExtractor extends AbstractPathExtractor {
 		var masks = masks(parsers);
 
 		try (FileSystem zipFile = FileSystems.newFileSystem(path)) {
-			zipFile.getRootDirectories().forEach(root -> {
-				walkPath(root, results, masks);
-			});
+			zipFile.getRootDirectories().forEach(root -> walkPath(root, results, masks));
 		}
 		return results;
 	}
