@@ -9,11 +9,11 @@ import java.net.URISyntaxException;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-class DirectoryExtractorTest extends AbstractExtractorTest {
+class PathExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractCsvFileFromDirectory() throws URISyntaxException {
-		var resultMap = new DirectoryExtractor().extract(getPath(data()), csvParser());
+		var resultMap = new PathExtractor().extract(getPath(data()), csvParser());
 		List<ParseResult> results = resultMap.get(Dummy.CSV);
 		assertThat(results)
 				.as("CSV parser")
@@ -27,7 +27,7 @@ class DirectoryExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractCsvFileFromDirectoryResource() throws IOException, URISyntaxException {
-		var resultMap = new DirectoryExtractor().extract(getUrl(data()), csvParser());
+		var resultMap = new PathExtractor().extract(getUrl(data()), csvParser());
 		List<ParseResult> results = resultMap.get(Dummy.CSV);
 		assertThat(results)
 				.as("CSV parser")
@@ -41,7 +41,7 @@ class DirectoryExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractJsonFileFromDirectory() throws URISyntaxException {
-		var resultMap = new DirectoryExtractor().extract(getPath(data()), jsonParser());
+		var resultMap = new PathExtractor().extract(getPath(data()), jsonParser());
 		List<ParseResult> results = resultMap.get(Dummy.JSON);
 		assertThat(results)
 				.as("JSON parser")
@@ -55,7 +55,7 @@ class DirectoryExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractTxtFileFromDirectory() throws URISyntaxException {
-		var resultMap = new DirectoryExtractor().extract(getPath(data()), textParser());
+		var resultMap = new PathExtractor().extract(getPath(data()), textParser());
 		List<ParseResult> results = resultMap.get(Dummy.TEXT);
 		assertThat(results)
 				.as("Text parser")
@@ -64,7 +64,7 @@ class DirectoryExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractAllFilesFromDirectory() throws URISyntaxException {
-		var resultMap = new DirectoryExtractor().extract(getPath(data()),
+		var resultMap = new PathExtractor().extract(getPath(data()),
 				csvParser(), jsonParser(), textParser());
 		assertThat(resultMap.get(Dummy.CSV))
 				.as("CSV parser")
@@ -81,7 +81,7 @@ class DirectoryExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractCsvFileFromPath() throws URISyntaxException {
-		var resultMap = new DirectoryExtractor().extract(getPath(data(), csv()), csvParser());
+		var resultMap = new PathExtractor().extract(getPath(data(), csv()), csvParser());
 		List<ParseResult> results = resultMap.get(Dummy.CSV);
 		assertThat(results)
 				.as("CSV parser")
@@ -95,7 +95,7 @@ class DirectoryExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractTxtFileFromPath() throws URISyntaxException {
-		var resultMap = new DirectoryExtractor().extract(getPath(data(), csv()), textParser());
+		var resultMap = new PathExtractor().extract(getPath(data(), csv()), textParser());
 		List<ParseResult> results = resultMap.get(Dummy.TEXT);
 		assertThat(results)
 				.as("Text parser")
@@ -104,7 +104,7 @@ class DirectoryExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractAllFilesFromNestedDirectory() throws URISyntaxException {
-		var resultMap = new DirectoryExtractor().extract(getPath(nested()),
+		var resultMap = new PathExtractor().extract(getPath(nested()),
 				csvParser(), jsonParser(), textParser());
 		assertThat(resultMap.get(Dummy.CSV))
 				.as("CSV parser")

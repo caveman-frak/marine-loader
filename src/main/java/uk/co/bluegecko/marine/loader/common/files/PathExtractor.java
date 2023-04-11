@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.MultiValueMap;
 
 @Slf4j
-public class DirectoryExtractor extends AbstractPathExtractor {
+public class PathExtractor extends AbstractPathExtractor {
 
 	@SafeVarargs
 	@Override
