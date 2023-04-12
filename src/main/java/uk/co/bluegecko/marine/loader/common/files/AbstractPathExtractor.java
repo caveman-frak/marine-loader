@@ -8,6 +8,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -17,7 +18,7 @@ import org.springframework.util.MultiValueMap;
 
 public abstract class AbstractPathExtractor implements FileExtractor<Path, InputStream> {
 
-	protected MultiValueMap<Enum<?>, ParseResult> walkPath(final Path path,
+	protected Map<Enum<?>, List<ParseResult>> walkPath(final Path path,
 			final MultiValueMap<Enum<?>, ParseResult> results,
 			final Map<Pattern, FileParser<InputStream>> masks) {
 		try (Stream<Path> files = Files.walk(path)) {
@@ -46,13 +47,13 @@ public abstract class AbstractPathExtractor implements FileExtractor<Path, Input
 	}
 
 	@SafeVarargs
-	public final MultiValueMap<Enum<?>, ParseResult> extract(final URI uri, final FileParser<InputStream>... parsers)
+	public final Map<Enum<?>, List<ParseResult>> extract(final URI uri, final FileParser<InputStream>... parsers)
 			throws IOException {
 		return extract(Paths.get(uri), parsers);
 	}
 
 	@SafeVarargs
-	public final MultiValueMap<Enum<?>, ParseResult> extract(final URL url, final FileParser<InputStream>... parsers)
+	public final Map<Enum<?>, List<ParseResult>> extract(final URL url, final FileParser<InputStream>... parsers)
 			throws IOException, URISyntaxException {
 		return extract(url.toURI(), parsers);
 	}
@@ -61,7 +62,7 @@ public abstract class AbstractPathExtractor implements FileExtractor<Path, Input
 		return Stream.of(parsers).collect(Collectors.toMap(FileParser::mask, p -> p));
 	}
 
-	protected LinkedMultiValueMap<Enum<?>, ParseResult> results() {
-		return new LinkedMultiValueMap<>();
+	protected MultiValueMap<Enum<?>, ParseResult> results() {
+		return new LinkedMultiValueMap<Enum<?>, ParseResult>();
 	}
 }

@@ -5,13 +5,14 @@ import java.io.InputStream;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import org.springframework.util.MultiValueMap;
+import java.util.List;
+import java.util.Map;
 
 public class ZipFileExtractor extends AbstractPathExtractor {
 
 	@SafeVarargs
 	@Override
-	public final MultiValueMap<Enum<?>, ParseResult> extract(final Path path,
+	public final Map<Enum<?>, List<ParseResult>> extract(final Path path,
 			final FileParser<InputStream>... parsers)
 			throws IOException {
 		final var results = results();

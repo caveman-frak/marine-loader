@@ -1,12 +1,13 @@
 package uk.co.bluegecko.marine.loader.common.files;
 
 import java.io.IOException;
-import org.springframework.util.MultiValueMap;
+import java.util.List;
+import java.util.Map;
 
 public interface FileExtractor<I, T> {
 
 	@SuppressWarnings("unchecked")
-	MultiValueMap<Enum<?>, ParseResult> extract(final I in,
+	Map<Enum<?>, List<ParseResult>> extract(final I in,
 			final FileParser<T>... parsers) throws IOException;
 
 }

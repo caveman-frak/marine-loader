@@ -2,18 +2,19 @@ package uk.co.bluegecko.marine.loader.common.files;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 public class ZipStreamExtractor implements FileExtractor<ZipInputStream, InputStream> {
 
 	@SafeVarargs
 	@Override
-	public final MultiValueMap<Enum<?>, ParseResult> extract(final ZipInputStream in,
+	public final Map<Enum<?>, List<ParseResult>> extract(final ZipInputStream in,
 			final FileParser<InputStream>... parsers)
 			throws IOException {
 		final var results = new LinkedMultiValueMap<Enum<?>, ParseResult>();
