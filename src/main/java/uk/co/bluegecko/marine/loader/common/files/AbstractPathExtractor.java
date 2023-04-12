@@ -63,6 +63,6 @@ public abstract class AbstractPathExtractor implements FileExtractor<Path, Input
 	}
 
 	protected MultiValueMap<Enum<?>, ParseResult> results() {
-		return new LinkedMultiValueMap<Enum<?>, ParseResult>();
+		return new LinkedMultiValueMap<>();
 	}
 }
