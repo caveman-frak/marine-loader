@@ -1,7 +1,6 @@
 package uk.co.bluegecko.marine.example;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
@@ -14,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DirectoryWatcherExample {
 
 	public static void main(String... args)
-			throws IOException, InterruptedException, URISyntaxException {
+			throws IOException, InterruptedException {
 
 		Path path = Files.createTempDirectory("test");
 		log.info("Dir: {}", path);

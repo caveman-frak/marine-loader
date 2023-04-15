@@ -53,7 +53,7 @@ public class FileWatcher {
 	public void poll(long timeout, TimeUnit unit) throws InterruptedException {
 		WatchKey key = watchService.poll(timeout, unit);
 		if (key != null) {
-			key.pollEvents().stream()
+			key.pollEvents()
 					.forEach(e -> {
 						FileProcessor<Path, ?, ?> processor = watchers.get(key);
 						if (processor != null) {

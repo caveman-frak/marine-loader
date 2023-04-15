@@ -40,8 +40,8 @@ class FileWatcherTest {
 		Files.writeString(file, """
 				"number","name"
 				100,"One Hundred"
-				20,Twenty
-				33,"Thirty Three" """, StandardCharsets.UTF_8);
+				22,"Twenty Two"
+				30,Thirty""", StandardCharsets.UTF_8);
 		return file;
 	}
 
