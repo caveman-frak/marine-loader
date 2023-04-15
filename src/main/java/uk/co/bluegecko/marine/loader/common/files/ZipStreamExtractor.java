@@ -2,6 +2,7 @@ package uk.co.bluegecko.marine.loader.common.files;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,7 +27,7 @@ public class ZipStreamExtractor implements FileExtractor<ZipInputStream, InputSt
 				String name = entry.getName();
 				masks.forEach((k, v) -> {
 							if (k.matcher(name).find()) {
-								results.add(v.type(), v.parse(name, in));
+								results.add(v.type(), v.parse(Path.of(name), in));
 							}
 						}
 				);

@@ -13,7 +13,7 @@ class ZipStreamExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractCsvFile() throws IOException {
-		try (ZipInputStream zin = getZipInputStream(data())) {
+		try (ZipInputStream zin = zipInputStream(data())) {
 			var resultMap = new ZipStreamExtractor()
 					.extract(zin, csvParser());
 			List<ParseResult> results = resultMap.get(Dummy.CSV);
@@ -23,14 +23,14 @@ class ZipStreamExtractorTest extends AbstractExtractorTest {
 					.hasSize(1);
 
 			assertThat(results.get(0))
-					.is(allOf(extracted(ParseResult::fileName, "file name", "dummy-data.csv"),
+					.is(allOf(extracted(r -> r.file().toString(), "file name", "dummy-data.csv"),
 							extracted(r -> r.values().size(), "value", 4)));
 		}
 	}
 
 	@Test
 	void testExtractJsonFile() throws IOException {
-		try (ZipInputStream zin = getZipInputStream(data())) {
+		try (ZipInputStream zin = zipInputStream(data())) {
 			var resultMap = new ZipStreamExtractor()
 					.extract(zin, jsonParser());
 			List<ParseResult> results = resultMap.get(Dummy.JSON);
@@ -40,14 +40,14 @@ class ZipStreamExtractorTest extends AbstractExtractorTest {
 					.hasSize(1);
 
 			assertThat(results.get(0))
-					.is(allOf(extracted(ParseResult::fileName, "file name", "dummy-data.json"),
+					.is(allOf(extracted(r -> r.file().toString(), "file name", "dummy-data.json"),
 							extracted(r -> r.values().size(), "value", 200)));
 		}
 	}
 
 	@Test
 	void testExtractTxtFile() throws IOException {
-		try (ZipInputStream zin = getZipInputStream(data())) {
+		try (ZipInputStream zin = zipInputStream(data())) {
 			var resultMap = new ZipStreamExtractor()
 					.extract(zin, textParser());
 			List<ParseResult> results = resultMap.get(Dummy.TEXT);
@@ -59,7 +59,7 @@ class ZipStreamExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractAllFile() throws IOException {
-		try (ZipInputStream zin = getZipInputStream(data())) {
+		try (ZipInputStream zin = zipInputStream(data())) {
 			var resultMap = new ZipStreamExtractor()
 					.extract(zin, csvParser(), jsonParser(), textParser());
 			assertThat(resultMap.get(Dummy.CSV))
@@ -78,7 +78,7 @@ class ZipStreamExtractorTest extends AbstractExtractorTest {
 
 	@Test
 	void testExtractAllNestedFile() throws IOException {
-		try (ZipInputStream zin = getZipInputStream(nested())) {
+		try (ZipInputStream zin = zipInputStream(nested())) {
 			var resultMap = new ZipStreamExtractor()
 					.extract(zin, csvParser(), jsonParser(), textParser());
 			assertThat(resultMap.get(Dummy.CSV))

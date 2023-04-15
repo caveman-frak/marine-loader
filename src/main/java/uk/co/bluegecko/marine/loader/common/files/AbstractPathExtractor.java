@@ -37,7 +37,7 @@ public abstract class AbstractPathExtractor implements FileExtractor<Path, Input
 		masks.forEach((k, v) -> {
 					if (k.matcher(name).find()) {
 						try (InputStream in = Files.newInputStream(file)) {
-							results.add(v.type(), v.parse(name, in));
+							results.add(v.type(), v.parse(file, in));
 						} catch (IOException e) {
 							throw new RuntimeException(e);
 						}

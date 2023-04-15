@@ -13,7 +13,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Clock;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
@@ -22,6 +25,8 @@ import java.util.zip.ZipInputStream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import uk.co.bluegecko.marine.wire.batch.Batch;
+import uk.co.bluegecko.marine.wire.batch.BatchType;
 import uk.co.bluegecko.marine.wire.batch.Batchable;
 
 public class AbstractExtractorTest {
@@ -30,7 +35,7 @@ public class AbstractExtractorTest {
 	@Tag("sanity-check")
 	@DisplayName("Sanity check the CSV file")
 	void checkCsvFileContents() throws IOException {
-		try (BufferedReader reader = getBufferedReader(data(), csv())) {
+		try (BufferedReader reader = bufferedReader(data(), csv())) {
 			assertThat(reader.readLine())
 					.startsWith("\"id\",")
 					.endsWith(",\"country\"");
@@ -41,7 +46,7 @@ public class AbstractExtractorTest {
 	@Tag("sanity-check")
 	@DisplayName("Sanity check the JSON file")
 	void checkJsonFileContents() throws IOException {
-		try (BufferedReader reader = getBufferedReader(data(), json())) {
+		try (BufferedReader reader = bufferedReader(data(), json())) {
 			assertThat(reader.readLine())
 					.isEqualTo("{");
 		}
@@ -51,7 +56,7 @@ public class AbstractExtractorTest {
 	@Tag("sanity-check")
 	@DisplayName("Sanity check the ZIP file")
 	void checkRawZipFileContents() throws IOException {
-		try (InputStream in = getInputStream(data(), zip())) {
+		try (InputStream in = inputStream(data(), zip())) {
 			assertThat(in.readNBytes(4)).as("Header 'PK♥♦'")
 					.isEqualTo(new byte[]{80, 75, 3, 4});
 			assertThat(in.readNBytes(2)).as("Version .0")
@@ -67,7 +72,7 @@ public class AbstractExtractorTest {
 	@Tag("sanity-check")
 	@DisplayName("Sanity check the ZIP file contents")
 	void checkZipFileContents() throws IOException {
-		try (ZipInputStream zin = getZipInputStream(data())) {
+		try (ZipInputStream zin = zipInputStream(data())) {
 			// CSV file
 			assertThat(zin.getNextEntry())
 					.has(extracted(ZipEntry::getName, "file name of", "dummy-data.csv"));
@@ -85,32 +90,32 @@ public class AbstractExtractorTest {
 		}
 	}
 
-	protected InputStream getInputStream(String dir, String suffix) {
+	protected InputStream inputStream(String dir, String suffix) {
 		return Objects.requireNonNull(getSystemResourceAsStream(dir + "/" + file() + "." + suffix));
 	}
 
-	protected ZipInputStream getZipInputStream(String dir) {
-		return new ZipInputStream(getInputStream(dir, zip()));
+	protected ZipInputStream zipInputStream(String dir) {
+		return new ZipInputStream(inputStream(dir, zip()));
 	}
 
-	protected BufferedReader getBufferedReader(String dir, String suffix) {
-		return new BufferedReader(new InputStreamReader(getInputStream(dir, suffix)));
+	protected BufferedReader bufferedReader(String dir, String suffix) {
+		return new BufferedReader(new InputStreamReader(inputStream(dir, suffix)));
 	}
 
-	protected URL getUrl(String dir, String suffix) {
+	protected URL url(String dir, String suffix) {
 		return getSystemResource(dir + "/" + file() + "." + suffix);
 	}
 
-	protected Path getPath(String dir, String suffix) throws URISyntaxException {
-		return Paths.get(getUrl(dir, suffix).toURI());
+	protected Path path(String dir, String suffix) throws URISyntaxException {
+		return Paths.get(url(dir, suffix).toURI());
 	}
 
-	protected URL getUrl(String dir) {
+	protected URL url(String dir) {
 		return getSystemResource(dir);
 	}
 
-	protected Path getPath(String dir) throws URISyntaxException {
-		return Paths.get(getUrl(dir).toURI());
+	protected Path path(String dir) throws URISyntaxException {
+		return Paths.get(url(dir).toURI());
 	}
 
 	protected String nested() {
@@ -162,12 +167,35 @@ public class AbstractExtractorTest {
 		}
 
 		@Override
-		public ParseResult parse(String fileName, InputStream in) {
+		public ParseResult parse(Path file, InputStream in) {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 			AtomicInteger line = new AtomicInteger();
-			return new ParseResult(fileName,
+			return new ParseResult(file,
 					reader.lines().map(s -> (Batchable) new Text(line.getAndIncrement(), s)).toList(),
 					List.of());
+		}
+	}
+
+	protected static class DummyFileProcessor extends AbstractFileProcessor<Path, InputStream, Batch> {
+
+		@SafeVarargs
+		public DummyFileProcessor(final FileExtractor<Path, InputStream> fileExtractor,
+				final FileParser<InputStream>... parsers) {
+			super(parsers, fileExtractor);
+		}
+
+		@Override
+		public Batch process(final Path file, final Map<Enum<?>, List<ParseResult>> results) throws IOException {
+			ParseResult result = results.get(Dummy.CSV).get(0);
+			return Batch.builder()
+					.type(BatchType.MIXED)
+					.file(file.resolve(result.file()))
+					.clock(Clock.systemUTC())
+					.name("Dummy Data")
+					.items(result.values())
+					.info(new HashMap<>())
+					.logs(result.logs())
+					.build();
 		}
 	}
 
