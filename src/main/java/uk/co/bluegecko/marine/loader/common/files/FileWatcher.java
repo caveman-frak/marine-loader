@@ -58,7 +58,7 @@ public class FileWatcher {
 		watchService.close();
 	}
 
-	public void poll(@NonNull final long timeout, @NonNull final TimeUnit unit) throws InterruptedException {
+	public void poll(final long timeout, @NonNull final TimeUnit unit) throws InterruptedException {
 		WatchKey key = watchService.poll(timeout, unit);
 		if (key != null) {
 			final Path directory = (Path) key.watchable();
