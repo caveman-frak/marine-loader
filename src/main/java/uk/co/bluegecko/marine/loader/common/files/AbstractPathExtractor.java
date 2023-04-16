@@ -14,22 +14,17 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-@Slf4j
 public abstract class AbstractPathExtractor implements FileExtractor<Path, InputStream> {
 
 	protected Map<Enum<?>, List<ParseResult>> walkPath(@NonNull final Path path,
 			@NonNull final MultiValueMap<Enum<?>, ParseResult> results,
 			@NonNull final Map<Pattern, FileParser<InputStream>> masks) {
-		log.info("Path: {} / {}", path, path.toAbsolutePath());
 		try (Stream<Path> files = Files.walk(path)) {
-			log.info("walking");
 			files.filter(f -> f.getFileName() != null).forEach(
 					file -> {
-						log.info("File: {} / {}", file, file.getFileName());
 						processFile(file, results, masks);
 					});
 		} catch (IOException e) {
