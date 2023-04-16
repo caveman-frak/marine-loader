@@ -24,9 +24,7 @@ public abstract class AbstractPathExtractor implements FileExtractor<Path, Input
 			@NonNull final Map<Pattern, FileParser<InputStream>> masks) {
 		try (Stream<Path> files = Files.walk(path)) {
 			files.filter(f -> f.getFileName() != null).forEach(
-					file -> {
-						processFile(file, results, masks);
-					});
+					file -> processFile(file, results, masks));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
