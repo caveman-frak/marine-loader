@@ -61,6 +61,19 @@ class FileWatcherTest extends AbstractExtractorTest {
 		assertThat(batch.fileName()).as("filename").isEqualTo("dummy-data.csv");
 	}
 
+	@Test
+	void testUnregister(@TempDir Path tmpDir) throws IOException {
+		WatchService watchService = tmpDir.getFileSystem().newWatchService();
+		FileWatcher fileWatcher = new FileWatcher(watchService);
+
+		assertThat(fileWatcher.register(tmpDir, fileProcessor)).as("1st register").isTrue();
+		assertThat(fileWatcher.register(tmpDir, fileProcessor)).as("2nd register").isFalse();
+		assertThat(fileWatcher.isRegistered(tmpDir)).as("is registered").isTrue();
+		assertThat(fileWatcher.unregister(tmpDir)).as("1st unregister").isTrue();
+		assertThat(fileWatcher.unregister(tmpDir)).as("2nd unregister").isFalse();
+		assertThat(fileWatcher.isRegistered(tmpDir)).as("is registered").isFalse();
+	}
+
 	private Path writeFile(Path dir, String filename) throws IOException {
 		Path file = Files.createFile(dir.resolve(filename));
 		Files.writeString(file, """

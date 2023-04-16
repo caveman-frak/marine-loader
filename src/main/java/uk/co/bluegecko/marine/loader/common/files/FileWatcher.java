@@ -8,6 +8,7 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -54,6 +55,10 @@ public class FileWatcher {
 		return false;
 	}
 
+	public boolean isRegistered(@NonNull final Path path) {
+		return mapping.containsKey(path);
+	}
+
 	public void close() throws IOException {
 		watchService.close();
 	}
@@ -61,19 +66,22 @@ public class FileWatcher {
 	public void poll(final long timeout, @NonNull final TimeUnit unit) throws InterruptedException {
 		WatchKey key = watchService.poll(timeout, unit);
 		if (key != null) {
-			final Path directory = (Path) key.watchable();
-			key.pollEvents()
-					.forEach(e -> {
-						FileProcessor<Path, ?, ?> processor = watchers.get(key);
-						if (processor != null) {
+			Set<WatchEvent.Kind<?>> valid = Set.of(StandardWatchEventKinds.ENTRY_CREATE,
+					StandardWatchEventKinds.ENTRY_MODIFY);
+			FileProcessor<Path, ?, ?> processor = watchers.get(key);
+			if (processor != null) {
+				final Path directory = (Path) key.watchable();
+				key.pollEvents()
+						.stream().filter(e -> valid.contains(e.kind()))
+						.forEach(e -> {
 							try {
 								Path file = (Path) e.context();
 								processor.extract(directory.resolve(file));
 							} catch (IOException ex) {
 								throw new RuntimeException(ex);
 							}
-						}
-					});
+						});
+			}
 			key.reset();
 		}
 	}
