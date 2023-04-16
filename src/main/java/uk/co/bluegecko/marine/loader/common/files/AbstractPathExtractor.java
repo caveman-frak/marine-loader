@@ -13,26 +13,34 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+@Slf4j
 public abstract class AbstractPathExtractor implements FileExtractor<Path, InputStream> {
 
-	protected Map<Enum<?>, List<ParseResult>> walkPath(final Path path,
-			final MultiValueMap<Enum<?>, ParseResult> results,
-			final Map<Pattern, FileParser<InputStream>> masks) {
+	protected Map<Enum<?>, List<ParseResult>> walkPath(@NonNull final Path path,
+			@NonNull final MultiValueMap<Enum<?>, ParseResult> results,
+			@NonNull final Map<Pattern, FileParser<InputStream>> masks) {
+		log.info("Path: {} / {}", path, path.toAbsolutePath());
 		try (Stream<Path> files = Files.walk(path)) {
+			log.info("walking");
 			files.filter(f -> f.getFileName() != null).forEach(
-					file -> processFile(file, results, masks));
+					file -> {
+						log.info("File: {} / {}", file, file.getFileName());
+						processFile(file, results, masks);
+					});
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 		return results;
 	}
 
-	protected void processFile(final Path file,
-			final MultiValueMap<Enum<?>, ParseResult> results,
-			final Map<Pattern, FileParser<InputStream>> masks) {
+	protected void processFile(@NonNull final Path file,
+			@NonNull final MultiValueMap<Enum<?>, ParseResult> results,
+			@NonNull final Map<Pattern, FileParser<InputStream>> masks) {
 		String name = file.getFileName().toString();
 		masks.forEach((k, v) -> {
 					if (k.matcher(name).find()) {
@@ -47,18 +55,20 @@ public abstract class AbstractPathExtractor implements FileExtractor<Path, Input
 	}
 
 	@SafeVarargs
-	public final Map<Enum<?>, List<ParseResult>> extract(final URI uri, final FileParser<InputStream>... parsers)
+	public final Map<Enum<?>, List<ParseResult>> extract(@NonNull final URI uri,
+			@NonNull final FileParser<InputStream>... parsers)
 			throws IOException {
 		return extract(Paths.get(uri), parsers);
 	}
 
 	@SafeVarargs
-	public final Map<Enum<?>, List<ParseResult>> extract(final URL url, final FileParser<InputStream>... parsers)
+	public final Map<Enum<?>, List<ParseResult>> extract(@NonNull final URL url,
+			@NonNull final FileParser<InputStream>... parsers)
 			throws IOException, URISyntaxException {
 		return extract(url.toURI(), parsers);
 	}
 
-	protected Map<Pattern, FileParser<InputStream>> masks(final FileParser<InputStream>[] parsers) {
+	protected Map<Pattern, FileParser<InputStream>> masks(@NonNull final FileParser<InputStream>[] parsers) {
 		return Stream.of(parsers).collect(Collectors.toMap(FileParser::mask, p -> p));
 	}
 

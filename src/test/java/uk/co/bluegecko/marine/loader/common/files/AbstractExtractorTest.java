@@ -19,9 +19,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import lombok.NonNull;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -90,31 +92,31 @@ public class AbstractExtractorTest {
 		}
 	}
 
-	protected InputStream inputStream(String dir, String suffix) {
+	protected InputStream inputStream(@NonNull final String dir, @NonNull final String suffix) {
 		return Objects.requireNonNull(getSystemResourceAsStream(dir + "/" + file() + "." + suffix));
 	}
 
-	protected ZipInputStream zipInputStream(String dir) {
+	protected ZipInputStream zipInputStream(@NonNull final String dir) {
 		return new ZipInputStream(inputStream(dir, zip()));
 	}
 
-	protected BufferedReader bufferedReader(String dir, String suffix) {
+	protected BufferedReader bufferedReader(@NonNull final String dir, @NonNull final String suffix) {
 		return new BufferedReader(new InputStreamReader(inputStream(dir, suffix)));
 	}
 
-	protected URL url(String dir, String suffix) {
+	protected URL url(@NonNull final String dir, @NonNull final String suffix) {
 		return getSystemResource(dir + "/" + file() + "." + suffix);
 	}
 
-	protected Path path(String dir, String suffix) throws URISyntaxException {
+	protected Path path(@NonNull final String dir, @NonNull final String suffix) throws URISyntaxException {
 		return Paths.get(url(dir, suffix).toURI());
 	}
 
-	protected URL url(String dir) {
+	protected URL url(@NonNull final String dir) {
 		return getSystemResource(dir);
 	}
 
-	protected Path path(String dir) throws URISyntaxException {
+	protected Path path(@NonNull final String dir) throws URISyntaxException {
 		return Paths.get(url(dir).toURI());
 	}
 
@@ -143,50 +145,59 @@ public class AbstractExtractorTest {
 	}
 
 	protected static DummyParser csvParser() {
-		return new DummyParser(Dummy.CSV, Pattern.compile("(.+)\\.csv"));
+		return new DummyParser(DummyType.CSV, Pattern.compile("(.+)\\.csv"));
 	}
 
 	protected static DummyParser jsonParser() {
-		return new DummyParser(Dummy.JSON, Pattern.compile("(.+)\\.json"));
+		return new DummyParser(DummyType.JSON, Pattern.compile("(.+)\\.json"));
 	}
 
 	protected static DummyParser textParser() {
-		return new DummyParser(Dummy.TEXT, Pattern.compile("(.+)\\.txt"));
+		return new DummyParser(DummyType.TEXT, Pattern.compile("(.+)\\.txt"));
 	}
 
-	protected enum Dummy {CSV, JSON, TEXT}
+	protected enum DummyType {CSV, JSON, TEXT}
 
-	protected record Text(Integer line, String text) implements Batchable {
+	protected record DummyText(@NonNull Integer line, @NonNull String text) implements Batchable {
 
 	}
 
 	protected static class DummyParser extends AbstractFileParser<InputStream> {
 
-		protected DummyParser(Enum<?> type, Pattern mask) {
+		protected DummyParser(@NonNull final Enum<?> type, @NonNull final Pattern mask) {
 			super(type, mask);
 		}
 
 		@Override
-		public ParseResult parse(Path file, InputStream in) {
+		public ParseResult parse(@NonNull final Path file, @NonNull final InputStream in) {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 			AtomicInteger line = new AtomicInteger();
 			return new ParseResult(file,
-					reader.lines().map(s -> (Batchable) new Text(line.getAndIncrement(), s)).toList(),
+					reader.lines().map(s -> (Batchable) new DummyText(line.getAndIncrement(), s)).toList(),
 					List.of());
 		}
 	}
 
-	protected static class DummyFileProcessor extends AbstractFileProcessor<Path, InputStream, Batch> {
+	protected static class DummyFileProcessor extends AbstractNotifyingFileProcessor<Path, InputStream, Batch> {
 
 		@SafeVarargs
-		public DummyFileProcessor(final FileExtractor<Path, InputStream> fileExtractor,
-				final FileParser<InputStream>... parsers) {
-			super(parsers, fileExtractor);
+		public DummyFileProcessor(@NonNull final FileExtractor<Path, InputStream> fileExtractor,
+				@NonNull final Consumer<Batch> notifier,
+				@NonNull final FileParser<InputStream>... parsers) {
+			super(fileExtractor, notifier, parsers);
+		}
+
+		@SafeVarargs
+		public DummyFileProcessor(@NonNull final FileExtractor<Path, InputStream> fileExtractor,
+				@NonNull final FileParser<InputStream>... parsers) {
+			this(fileExtractor, v -> {
+			}, parsers);
 		}
 
 		@Override
-		public Batch process(final Path file, final Map<Enum<?>, List<ParseResult>> results) throws IOException {
-			ParseResult result = results.get(Dummy.CSV).get(0);
+		public Batch process(@NonNull final Path file,
+				@NonNull final Map<Enum<?>, List<ParseResult>> results) throws IOException {
+			ParseResult result = results.get(DummyType.CSV).get(0);
 			return Batch.builder()
 					.type(BatchType.MIXED)
 					.file(file.resolve(result.file()))

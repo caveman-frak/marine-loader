@@ -16,7 +16,7 @@ class ZipStreamExtractorTest extends AbstractExtractorTest {
 		try (ZipInputStream zin = zipInputStream(data())) {
 			var resultMap = new ZipStreamExtractor()
 					.extract(zin, csvParser());
-			List<ParseResult> results = resultMap.get(Dummy.CSV);
+			List<ParseResult> results = resultMap.get(DummyType.CSV);
 			assertThat(results)
 					.as("CSV parser")
 					.isNotNull()
@@ -33,7 +33,7 @@ class ZipStreamExtractorTest extends AbstractExtractorTest {
 		try (ZipInputStream zin = zipInputStream(data())) {
 			var resultMap = new ZipStreamExtractor()
 					.extract(zin, jsonParser());
-			List<ParseResult> results = resultMap.get(Dummy.JSON);
+			List<ParseResult> results = resultMap.get(DummyType.JSON);
 			assertThat(results)
 					.as("JSON parser")
 					.isNotNull()
@@ -50,7 +50,7 @@ class ZipStreamExtractorTest extends AbstractExtractorTest {
 		try (ZipInputStream zin = zipInputStream(data())) {
 			var resultMap = new ZipStreamExtractor()
 					.extract(zin, textParser());
-			List<ParseResult> results = resultMap.get(Dummy.TEXT);
+			List<ParseResult> results = resultMap.get(DummyType.TEXT);
 			assertThat(results)
 					.as("Text parser")
 					.isNull();
@@ -62,15 +62,15 @@ class ZipStreamExtractorTest extends AbstractExtractorTest {
 		try (ZipInputStream zin = zipInputStream(data())) {
 			var resultMap = new ZipStreamExtractor()
 					.extract(zin, csvParser(), jsonParser(), textParser());
-			assertThat(resultMap.get(Dummy.CSV))
+			assertThat(resultMap.get(DummyType.CSV))
 					.as("CSV parser")
 					.isNotNull()
 					.hasSize(1);
-			assertThat(resultMap.get(Dummy.JSON))
+			assertThat(resultMap.get(DummyType.JSON))
 					.as("JSON parser")
 					.isNotNull()
 					.hasSize(1);
-			assertThat(resultMap.get(Dummy.TEXT))
+			assertThat(resultMap.get(DummyType.TEXT))
 					.as("Text parser")
 					.isNull();
 		}
@@ -81,15 +81,15 @@ class ZipStreamExtractorTest extends AbstractExtractorTest {
 		try (ZipInputStream zin = zipInputStream(nested())) {
 			var resultMap = new ZipStreamExtractor()
 					.extract(zin, csvParser(), jsonParser(), textParser());
-			assertThat(resultMap.get(Dummy.CSV))
+			assertThat(resultMap.get(DummyType.CSV))
 					.as("CSV parser")
 					.isNotNull()
 					.hasSize(1);
-			assertThat(resultMap.get(Dummy.JSON))
+			assertThat(resultMap.get(DummyType.JSON))
 					.as("JSON parser")
 					.isNotNull()
 					.hasSize(1);
-			assertThat(resultMap.get(Dummy.TEXT))
+			assertThat(resultMap.get(DummyType.TEXT))
 					.as("Text parser")
 					.isNull();
 		}

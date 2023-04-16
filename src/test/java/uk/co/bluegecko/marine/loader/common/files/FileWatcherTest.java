@@ -1,6 +1,6 @@
 package uk.co.bluegecko.marine.loader.common.files;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
@@ -10,21 +10,26 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.WatchService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.bluegecko.marine.wire.batch.Batch;
+import uk.co.bluegecko.marine.wire.batch.BatchType;
 
 @ExtendWith(MockitoExtension.class)
-class FileWatcherTest {
+class FileWatcherTest extends AbstractExtractorTest {
 
 	@Mock
 	FileProcessor<Path, InputStream, Batch> fileProcessor;
+	@Mock
+	Consumer<Batch> notifier;
 
 	@Test
-	void testRegister(@TempDir Path tmpDir) throws IOException, InterruptedException {
+	void testRegisterWithMock(@TempDir Path tmpDir) throws IOException, InterruptedException {
 		WatchService watchService = tmpDir.getFileSystem().newWatchService();
 		FileWatcher fileWatcher = new FileWatcher(watchService);
 		fileWatcher.register(tmpDir, fileProcessor);
@@ -32,7 +37,28 @@ class FileWatcherTest {
 		writeFile(tmpDir, "dummy-data.csv");
 		fileWatcher.poll(2, TimeUnit.SECONDS);
 
-		verify(fileProcessor).extract(any(Path.class));
+		ArgumentCaptor<Path> arg = ArgumentCaptor.forClass(Path.class);
+		verify(fileProcessor).extract(arg.capture());
+
+		assertThat(arg.getValue()).hasFileName("dummy-data.csv");
+	}
+
+	@Test
+	void testRegisterWithNotify(@TempDir Path tmpDir) throws IOException, InterruptedException {
+		WatchService watchService = tmpDir.getFileSystem().newWatchService();
+		FileWatcher fileWatcher = new FileWatcher(watchService);
+		fileWatcher.register(tmpDir, new DummyFileProcessor(new PathExtractor(), notifier, csvParser()));
+
+		writeFile(tmpDir, "dummy-data.csv");
+		fileWatcher.poll(2, TimeUnit.SECONDS);
+
+		ArgumentCaptor<Batch> arg = ArgumentCaptor.forClass(Batch.class);
+		verify(notifier).accept(arg.capture());
+
+		Batch batch = arg.getValue();
+		assertThat(batch).as("exists").isNotNull();
+		assertThat(batch.type()).as("type").isEqualTo(BatchType.MIXED);
+		assertThat(batch.fileName()).as("filename").isEqualTo("dummy-data.csv");
 	}
 
 	private Path writeFile(Path dir, String filename) throws IOException {

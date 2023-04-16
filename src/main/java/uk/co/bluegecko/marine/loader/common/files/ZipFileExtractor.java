@@ -7,13 +7,14 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import lombok.NonNull;
 
 public class ZipFileExtractor extends AbstractPathExtractor {
 
 	@SafeVarargs
 	@Override
-	public final Map<Enum<?>, List<ParseResult>> extract(final Path path,
-			final FileParser<InputStream>... parsers)
+	public final Map<Enum<?>, List<ParseResult>> extract(@NonNull final Path path,
+			@NonNull final FileParser<InputStream>... parsers)
 			throws IOException {
 		final var results = results();
 		final var masks = masks(parsers);

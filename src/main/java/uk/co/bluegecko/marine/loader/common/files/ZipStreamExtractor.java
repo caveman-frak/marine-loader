@@ -9,14 +9,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import lombok.NonNull;
 import org.springframework.util.LinkedMultiValueMap;
 
 public class ZipStreamExtractor implements FileExtractor<ZipInputStream, InputStream> {
 
 	@SafeVarargs
 	@Override
-	public final Map<Enum<?>, List<ParseResult>> extract(final ZipInputStream in,
-			final FileParser<InputStream>... parsers)
+	public final Map<Enum<?>, List<ParseResult>> extract(@NonNull final ZipInputStream in,
+			@NonNull final FileParser<InputStream>... parsers)
 			throws IOException {
 		final var results = new LinkedMultiValueMap<Enum<?>, ParseResult>();
 		final var masks = Stream.of(parsers).collect(Collectors.toMap(FileParser::mask, p -> p));

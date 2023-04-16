@@ -9,6 +9,8 @@ import java.nio.file.WatchService;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import lombok.NonNull;
+import lombok.SneakyThrows;
 
 public class FileWatcher {
 
@@ -16,13 +18,15 @@ public class FileWatcher {
 	private final Map<Path, WatchKey> mapping;
 	private final WatchService watchService;
 
-	public FileWatcher(WatchService watchService) {
+	public FileWatcher(@NonNull final WatchService watchService) {
 		watchers = new HashMap<>();
 		mapping = new HashMap<>();
 		this.watchService = watchService;
 	}
 
-	public boolean register(Path path, FileProcessor<Path, ?, ?> processor, WatchEvent.Kind<?>... events)
+	public boolean register(@NonNull final Path path,
+			@NonNull final FileProcessor<Path, ?, ?> processor,
+			@NonNull final WatchEvent.Kind<?>... events)
 			throws IOException {
 		if (mapping.containsKey(path)) {
 			return false;
@@ -39,7 +43,7 @@ public class FileWatcher {
 		return register(path, processor, StandardWatchEventKinds.ENTRY_CREATE);
 	}
 
-	public boolean unregister(Path path) {
+	public boolean unregister(@NonNull final Path path) {
 		WatchKey key = mapping.get(path);
 		if (key != null) {
 			key.cancel();
@@ -50,15 +54,21 @@ public class FileWatcher {
 		return false;
 	}
 
-	public void poll(long timeout, TimeUnit unit) throws InterruptedException {
+	public void close() throws IOException {
+		watchService.close();
+	}
+
+	public void poll(@NonNull final long timeout, @NonNull final TimeUnit unit) throws InterruptedException {
 		WatchKey key = watchService.poll(timeout, unit);
 		if (key != null) {
+			final Path directory = (Path) key.watchable();
 			key.pollEvents()
 					.forEach(e -> {
 						FileProcessor<Path, ?, ?> processor = watchers.get(key);
 						if (processor != null) {
 							try {
-								processor.extract((Path) e.context());
+								Path file = (Path) e.context();
+								processor.extract(directory.resolve(file));
 							} catch (IOException ex) {
 								throw new RuntimeException(ex);
 							}
@@ -66,6 +76,11 @@ public class FileWatcher {
 					});
 			key.reset();
 		}
-
 	}
+
+	@SneakyThrows
+	public void poll() {
+		poll(0, TimeUnit.SECONDS);
+	}
+
 }

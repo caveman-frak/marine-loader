@@ -16,7 +16,7 @@ class ZipFileExtractorTest extends AbstractExtractorTest {
 	@Test
 	void testExtractCsvFile() throws IOException, URISyntaxException {
 		var resultMap = new ZipFileExtractor().extract(path(data(), zip()), csvParser());
-		List<ParseResult> results = resultMap.get(Dummy.CSV);
+		List<ParseResult> results = resultMap.get(DummyType.CSV);
 		assertThat(results)
 				.as("CSV parser")
 				.isNotNull()
@@ -30,7 +30,7 @@ class ZipFileExtractorTest extends AbstractExtractorTest {
 	@Test
 	void testExtractCsvFileFromResource() throws IOException, URISyntaxException {
 		var resultMap = new ZipFileExtractor().extract(path(data(), zip()), csvParser());
-		List<ParseResult> results = resultMap.get(Dummy.CSV);
+		List<ParseResult> results = resultMap.get(DummyType.CSV);
 		assertThat(results)
 				.as("CSV parser")
 				.isNotNull()
@@ -44,7 +44,7 @@ class ZipFileExtractorTest extends AbstractExtractorTest {
 	@Test
 	void testExtractJsonFile() throws IOException, URISyntaxException {
 		var resultMap = new ZipFileExtractor().extract(path(data(), zip()), jsonParser());
-		List<ParseResult> results = resultMap.get(Dummy.JSON);
+		List<ParseResult> results = resultMap.get(DummyType.JSON);
 		assertThat(results)
 				.as("JSON parser")
 				.isNotNull()
@@ -58,7 +58,7 @@ class ZipFileExtractorTest extends AbstractExtractorTest {
 	@Test
 	void testExtractTxtFile() throws IOException, URISyntaxException {
 		var resultMap = new ZipFileExtractor().extract(path(data(), zip()), textParser());
-		List<ParseResult> results = resultMap.get(Dummy.TEXT);
+		List<ParseResult> results = resultMap.get(DummyType.TEXT);
 		assertThat(results)
 				.as("Text parser")
 				.isNull();
@@ -68,15 +68,15 @@ class ZipFileExtractorTest extends AbstractExtractorTest {
 	void testExtractAllFile() throws IOException, URISyntaxException {
 		var resultMap = new ZipFileExtractor().extract(path(data(), zip()),
 				csvParser(), jsonParser(), textParser());
-		assertThat(resultMap.get(Dummy.CSV))
+		assertThat(resultMap.get(DummyType.CSV))
 				.as("CSV parser")
 				.isNotNull()
 				.hasSize(1);
-		assertThat(resultMap.get(Dummy.JSON))
+		assertThat(resultMap.get(DummyType.JSON))
 				.as("JSON parser")
 				.isNotNull()
 				.hasSize(1);
-		assertThat(resultMap.get(Dummy.TEXT))
+		assertThat(resultMap.get(DummyType.TEXT))
 				.as("Text parser")
 				.isNull();
 	}
@@ -85,15 +85,15 @@ class ZipFileExtractorTest extends AbstractExtractorTest {
 	void testExtractAllNestedFile() throws IOException, URISyntaxException {
 		var resultMap = new ZipFileExtractor().extract(path(nested(), zip()),
 				csvParser(), jsonParser(), textParser());
-		assertThat(resultMap.get(Dummy.CSV))
+		assertThat(resultMap.get(DummyType.CSV))
 				.as("CSV parser")
 				.isNotNull()
 				.hasSize(1);
-		assertThat(resultMap.get(Dummy.JSON))
+		assertThat(resultMap.get(DummyType.JSON))
 				.as("JSON parser")
 				.isNotNull()
 				.hasSize(1);
-		assertThat(resultMap.get(Dummy.TEXT))
+		assertThat(resultMap.get(DummyType.TEXT))
 				.as("Text parser")
 				.isNull();
 	}
