@@ -1,6 +1,5 @@
 package uk.co.bluegecko.marine.loader.common.files;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
@@ -18,8 +17,7 @@ public class PathExtractor extends AbstractPathExtractor {
 	 *
 	 * @param path    the path to extract files from, if a directory, otherwise a single file to check.
 	 * @param parsers the parsers to apply to the extracted file(s).
-	 * @return the set of parse results.
-	 * @throws IOException thrown if error occurs on the input/contents.
+	 * @return the map of parse results.
 	 */
 	@SafeVarargs
 	@Override

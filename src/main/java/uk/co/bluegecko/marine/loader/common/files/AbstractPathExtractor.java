@@ -53,7 +53,7 @@ public abstract class AbstractPathExtractor implements FileExtractor<Path, Input
 	 *
 	 * @param uri     the uri of the content to extract files from.
 	 * @param parsers the parsers to apply to the extracted files.
-	 * @return the set of parse results.
+	 * @return the map of parse results.
 	 * @throws IOException thrown if error occurs on the input/contents.
 	 */
 	@SafeVarargs
@@ -69,7 +69,7 @@ public abstract class AbstractPathExtractor implements FileExtractor<Path, Input
 	 *
 	 * @param url     the url of the content to extract files from.
 	 * @param parsers the parsers to apply to the extracted files.
-	 * @return the set of parse results.
+	 * @return the map of parse results.
 	 * @throws IOException thrown if error occurs on the input/contents.
 	 */
 	@SafeVarargs

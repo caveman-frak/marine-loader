@@ -20,7 +20,7 @@ public class ZipFileExtractor extends AbstractPathExtractor {
 	 *
 	 * @param path    the path of the zip file to extract files from.
 	 * @param parsers the parsers to apply to the extracted files.
-	 * @return the set of parse results.
+	 * @return the map of parse results.
 	 * @throws IOException thrown if error occurs on the input/contents.
 	 */
 	@SafeVarargs
