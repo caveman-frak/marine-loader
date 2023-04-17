@@ -12,8 +12,20 @@ import java.util.zip.ZipInputStream;
 import lombok.NonNull;
 import org.springframework.util.LinkedMultiValueMap;
 
+/**
+ * Extract the contents of the input zip stream and parse the input stream of any that are applicable.
+ */
 public class ZipStreamExtractor implements FileExtractor<ZipInputStream, InputStream> {
 
+	/**
+	 * Enumerate the content of the zip stream, apply parsers to any that matches the file masks of the supplied parsers
+	 * and generate a set of results.
+	 *
+	 * @param in      the zip stream to extract files from.
+	 * @param parsers the parsers to apply to the extracted files.
+	 * @return the set of parse results.
+	 * @throws IOException thrown if error occurs on the input/contents.
+	 */
 	@SafeVarargs
 	@Override
 	public final Map<Enum<?>, List<ParseResult>> extract(@NonNull final ZipInputStream in,

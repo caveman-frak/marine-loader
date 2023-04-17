@@ -47,6 +47,15 @@ public abstract class AbstractPathExtractor implements FileExtractor<Path, Input
 		);
 	}
 
+	/**
+	 * Enumerate the content of the input, apply parsers to any that matches the file masks of the supplied parsers and
+	 * generate a set of results.
+	 *
+	 * @param uri     the uri of the content to extract files from.
+	 * @param parsers the parsers to apply to the extracted files.
+	 * @return the set of parse results.
+	 * @throws IOException thrown if error occurs on the input/contents.
+	 */
 	@SafeVarargs
 	public final Map<Enum<?>, List<ParseResult>> extract(@NonNull final URI uri,
 			@NonNull final FileParser<InputStream>... parsers)
@@ -54,6 +63,15 @@ public abstract class AbstractPathExtractor implements FileExtractor<Path, Input
 		return extract(Paths.get(uri), parsers);
 	}
 
+	/**
+	 * Enumerate the content of the input, apply parsers to any that matches the file masks of the supplied parsers and
+	 * generate a set of results.
+	 *
+	 * @param url     the url of the content to extract files from.
+	 * @param parsers the parsers to apply to the extracted files.
+	 * @return the set of parse results.
+	 * @throws IOException thrown if error occurs on the input/contents.
+	 */
 	@SafeVarargs
 	public final Map<Enum<?>, List<ParseResult>> extract(@NonNull final URL url,
 			@NonNull final FileParser<InputStream>... parsers)

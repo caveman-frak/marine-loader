@@ -195,7 +195,7 @@ public class AbstractExtractorTest {
 		}
 
 		@Override
-		public Batch process(@NonNull final Path file,
+		public Batch collect(@NonNull final Path file,
 				@NonNull final Map<Enum<?>, List<ParseResult>> results) throws IOException {
 			ParseResult result = results.get(DummyType.CSV).get(0);
 			return Batch.builder()

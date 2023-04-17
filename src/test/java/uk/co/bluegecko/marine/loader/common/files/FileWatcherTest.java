@@ -1,6 +1,7 @@
 package uk.co.bluegecko.marine.loader.common.files;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
@@ -44,7 +45,7 @@ class FileWatcherTest extends AbstractExtractorTest {
 	}
 
 	@Test
-	void testRegisterWithNotify(@TempDir Path tmpDir) throws IOException, InterruptedException {
+	void testPoll(@TempDir Path tmpDir) throws IOException, InterruptedException {
 		WatchService watchService = tmpDir.getFileSystem().newWatchService();
 		FileWatcher fileWatcher = new FileWatcher(watchService);
 		fileWatcher.register(tmpDir, new DummyFileProcessor(new PathExtractor(), notifier, csvParser()));
@@ -59,6 +60,23 @@ class FileWatcherTest extends AbstractExtractorTest {
 		assertThat(batch).as("exists").isNotNull();
 		assertThat(batch.type()).as("type").isEqualTo(BatchType.MIXED);
 		assertThat(batch.fileName()).as("filename").isEqualTo("dummy-data.csv");
+	}
+
+	@Test
+	void testPollRepeat(@TempDir Path tmpDir) throws IOException, InterruptedException {
+		WatchService watchService = tmpDir.getFileSystem().newWatchService();
+		FileWatcher fileWatcher = new FileWatcher(watchService);
+		fileWatcher.register(tmpDir, fileProcessor);
+
+		writeFile(tmpDir, "dummy-data.csv");
+		writeFile(tmpDir, "dummy-data.json");
+		fileWatcher.poll(2, TimeUnit.SECONDS);
+
+		ArgumentCaptor<Path> arg = ArgumentCaptor.forClass(Path.class);
+		verify(fileProcessor, times(2)).extract(arg.capture());
+
+		assertThat(arg.getAllValues()).extracting(p -> p.getFileName().toString())
+				.contains("dummy-data.csv", "dummy-data.json");
 	}
 
 	@Test

@@ -9,8 +9,20 @@ import java.util.List;
 import java.util.Map;
 import lombok.NonNull;
 
+/**
+ * Extract the contents of the input zip file and parse the input stream of any that are applicable.
+ */
 public class ZipFileExtractor extends AbstractPathExtractor {
 
+	/**
+	 * Enumerate the content of the zip file, apply parsers to any that matches the file masks of the supplied parsers
+	 * and generate a set of results.
+	 *
+	 * @param path    the path of the zip file to extract files from.
+	 * @param parsers the parsers to apply to the extracted files.
+	 * @return the set of parse results.
+	 * @throws IOException thrown if error occurs on the input/contents.
+	 */
 	@SafeVarargs
 	@Override
 	public final Map<Enum<?>, List<ParseResult>> extract(@NonNull final Path path,
