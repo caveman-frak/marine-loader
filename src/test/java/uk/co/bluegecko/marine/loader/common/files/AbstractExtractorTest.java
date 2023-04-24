@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -194,9 +195,10 @@ public class AbstractExtractorTest {
 			}, parsers);
 		}
 
+		@SneakyThrows
 		@Override
 		public Batch collect(@NonNull final Path file,
-				@NonNull final Map<Enum<?>, List<ParseResult>> results) throws IOException {
+				@NonNull final Map<Enum<?>, List<ParseResult>> results) {
 			ParseResult result = results.get(DummyType.CSV).get(0);
 			return Batch.builder()
 					.type(BatchType.MIXED)

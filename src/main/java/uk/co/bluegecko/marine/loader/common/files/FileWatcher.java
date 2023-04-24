@@ -128,14 +128,7 @@ public class FileWatcher {
 				final Path directory = (Path) key.watchable();
 				key.pollEvents()
 						.stream().filter(e -> valid.contains(e.kind()))
-						.forEach(e -> {
-							try {
-								Path file = (Path) e.context();
-								processor.extract(directory.resolve(file));
-							} catch (IOException ex) {
-								throw new RuntimeException(ex);
-							}
-						});
+						.forEach(e -> processor.extract(directory.resolve((Path) e.context())));
 			}
 			key.reset();
 			key = watchService.poll();

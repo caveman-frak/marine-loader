@@ -1,6 +1,5 @@
 package uk.co.bluegecko.marine.loader.common.files;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import lombok.NonNull;
@@ -20,10 +19,9 @@ public interface FileExtractor<I, T> {
 	 * @param in      the content to extract files from.
 	 * @param parsers the parsers to apply to the extracted files.
 	 * @return the map of parse results.
-	 * @throws IOException thrown if error occurs on the input/contents.
 	 */
 	@SuppressWarnings("unchecked")
 	Map<Enum<?>, List<ParseResult>> extract(@NonNull final I in,
-			@NonNull final FileParser<T>... parsers) throws IOException;
+			@NonNull final FileParser<T>... parsers);
 
 }

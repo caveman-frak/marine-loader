@@ -21,18 +21,18 @@ public class ZipFileExtractor extends AbstractPathExtractor {
 	 * @param path    the path of the zip file to extract files from.
 	 * @param parsers the parsers to apply to the extracted files.
 	 * @return the map of parse results.
-	 * @throws IOException thrown if error occurs on the input/contents.
 	 */
 	@SafeVarargs
 	@Override
 	public final Map<Enum<?>, List<ParseResult>> extract(@NonNull final Path path,
-			@NonNull final FileParser<InputStream>... parsers)
-			throws IOException {
+			@NonNull final FileParser<InputStream>... parsers) {
 		final var results = results();
 		final var masks = masks(parsers);
 
 		try (FileSystem zipFile = FileSystems.newFileSystem(path)) {
 			zipFile.getRootDirectories().forEach(root -> walkPath(root, results, masks));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 		return results;
 	}
