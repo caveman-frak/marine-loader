@@ -17,6 +17,7 @@ import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.co.bluegecko.marine.loader.downloader.back4app.core.Back4AppProperties;
@@ -29,6 +30,7 @@ import uk.co.bluegecko.marine.loader.downloader.back4app.core.Back4AppProperties
 @Slf4j
 @Value
 @Component
+@ConditionalOnProperty(prefix = "back4app", name = "enabled", havingValue = "true")
 public class CityDownloader implements ApplicationRunner {
 
 	Back4AppProperties properties;
@@ -121,8 +123,8 @@ public class CityDownloader implements ApplicationRunner {
 				}
 			}
 			writer.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed to process cities", ex);
 		}
 	}
 

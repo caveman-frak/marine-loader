@@ -10,5 +10,5 @@ dependencies {
 }
 
 application {
-    mainClass.set("uk.co.bluegecko.marine.loader.downloader.back4app.DownloaderApplication")
+    mainClass.set("uk.co.bluegecko.marine.loader.LoaderApplication")
 }

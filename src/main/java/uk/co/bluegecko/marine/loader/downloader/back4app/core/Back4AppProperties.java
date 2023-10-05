@@ -6,7 +6,10 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 
 
 @ConfigurationProperties(prefix = "back4app")
-public record Back4AppProperties(Connection connection, Application application, @DefaultValue("10") int limit) {
+public record Back4AppProperties(boolean enabled,
+                                 Connection connection,
+                                 Application application,
+                                 @DefaultValue("10") int limit) {
 
 	public record Connection(String scheme, String host, Map<String, String> path) {
 
