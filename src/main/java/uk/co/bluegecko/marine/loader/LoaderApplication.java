@@ -18,6 +18,7 @@ public class LoaderApplication {
 
 	public static void main(String[] args) {
 		new SpringApplicationBuilder(LoaderApplication.class)
+				.registerShutdownHook(true)
 				.web(WebApplicationType.NONE)
 				.run(args);
 	}

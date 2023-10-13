@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 @ConfigurationProperties(prefix = "ais")
 public record AisProperties(boolean enabled, List<Feed> feeds) {
 
-	public record Feed(String id, Connection connection, List<String> tags) {
+	public record Feed(String id, @DefaultValue("true") boolean enabled, Connection connection, List<String> tags) {
 
 	}
 

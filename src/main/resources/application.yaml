@@ -37,9 +37,17 @@ ais:
   enabled: true
   feeds:
     - id: "norway"
+      enabled: false
       connection:
         host: "153.44.253.27"
         port: 5631
+        protocol: TCP
+      tags:
+        - SAT
+    - id: "test-1"
+      connection:
+        host: "127.0.0.1"
+        port: 10000
         protocol: TCP
       tags:
         - SAT
