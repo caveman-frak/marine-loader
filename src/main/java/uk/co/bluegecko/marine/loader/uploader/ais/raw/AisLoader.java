@@ -37,7 +37,7 @@ import uk.co.bluegecko.marine.shared.configuration.ExecutorConfiguration;
 @Data
 @Component
 @Import({ExecutorConfiguration.class})
-@ConditionalOnProperty(prefix = "ais", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "marine.ais", name = "enabled", havingValue = "true")
 public class AisLoader implements ApplicationRunner {
 
 	private static final int CAPACITY = 1024;
@@ -64,6 +64,8 @@ public class AisLoader implements ApplicationRunner {
 		pending = new ConcurrentLinkedQueue<>();
 		provider = SelectorProvider.provider();
 		running = new AtomicInteger();
+
+		log.debug("Retry interval: {}s, max attempts: {}", retryInterval, maxRetries);
 	}
 
 	public void run(ApplicationArguments args) {

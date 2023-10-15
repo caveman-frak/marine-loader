@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 
 
-@ConfigurationProperties(prefix = "back4app")
+@ConfigurationProperties(prefix = "marine.back4app")
 public record Back4AppProperties(boolean enabled,
                                  Connection connection,
                                  Application application,

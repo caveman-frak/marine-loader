@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 
-@ConfigurationProperties(prefix = "ais")
+@ConfigurationProperties(prefix = "marine.ais")
 public record AisProperties(boolean enabled, List<Feed> feeds) {
 
 	public record Feed(String id, @DefaultValue("true") boolean enabled, Connection connection, List<String> tags) {

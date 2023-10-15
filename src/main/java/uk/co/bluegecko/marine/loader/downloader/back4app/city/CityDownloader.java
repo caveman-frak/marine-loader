@@ -30,7 +30,7 @@ import uk.co.bluegecko.marine.loader.downloader.back4app.core.Back4AppProperties
 @Slf4j
 @Value
 @Component
-@ConditionalOnProperty(prefix = "back4app", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "marine.back4app", name = "enabled", havingValue = "true")
 public class CityDownloader implements ApplicationRunner {
 
 	Back4AppProperties properties;
