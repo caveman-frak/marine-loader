@@ -1,10 +1,14 @@
 package uk.co.bluegecko.marine.loader.uploader.ais.raw;
 
+import dk.dma.ais.binary.SixbitException;
+import dk.dma.ais.message.AisMessageException;
+import dk.dma.ais.sentence.SentenceException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.ByteChannel;
 import java.nio.channels.ClosedChannelException;
+import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -31,8 +35,15 @@ import org.springframework.stereotype.Component;
 import uk.co.bluegecko.marine.loader.uploader.ais.core.AisProperties;
 import uk.co.bluegecko.marine.loader.uploader.ais.core.AisProperties.Connection;
 import uk.co.bluegecko.marine.loader.uploader.ais.core.AisProperties.Feed;
+import uk.co.bluegecko.marine.loader.uploader.ais.processed.AisMessageHandler;
 import uk.co.bluegecko.marine.shared.configuration.ExecutorConfiguration;
 
+/**
+ * Load AIS data from a TCP or UDP source.
+ * <p/>
+ * {@code TCP: netcat -v --send-only -l 127.0.0.1 10000 < loader/src/test/resources/ais/feed/norway-ais.txt}<p/>
+ * {@code UDP: netcat -vu -p 10001 ::1 10000 < loader/src/test/resources/ais/feed/norway-ais.txt}
+ */
 @Slf4j
 @Data
 @Component
@@ -42,6 +53,8 @@ public class AisLoader implements ApplicationRunner {
 
 	private static final int CAPACITY = 1024;
 
+	private final RawMessageHandler rawMessageHandler;
+	private final AisMessageHandler aisMessageHandler;
 	private final AisProperties properties;
 	private final ExecutorService executor;
 	private final Queue<Future<Optional<ChannelFeed>>> pending;
@@ -51,12 +64,14 @@ public class AisLoader implements ApplicationRunner {
 	private final int retryInterval;
 
 	public AisLoader(
-			AisProperties properties,
-			ExecutorService executor,
-			@Value("${marine.loader.retry.max:3}")
-			int maxRetries,
-			@Value("${marine.loader.retry.interval:10}")
-			int retryInterval) {
+			final RawMessageHandler rawMessageHandler,
+			final AisMessageHandler aisMessageHandler,
+			final AisProperties properties,
+			final ExecutorService executor,
+			@Value("${marine.loader.retry.max:3}") final int maxRetries,
+			@Value("${marine.loader.retry.interval:10}") final int retryInterval) {
+		this.rawMessageHandler = rawMessageHandler;
+		this.aisMessageHandler = aisMessageHandler;
 		this.properties = properties;
 		this.executor = executor;
 		this.maxRetries = maxRetries;
@@ -65,7 +80,7 @@ public class AisLoader implements ApplicationRunner {
 		provider = SelectorProvider.provider();
 		running = new AtomicInteger();
 
-		log.debug("Retry interval: {}s, max attempts: {}", retryInterval, maxRetries);
+		log.info("Retry interval = {}s, max attempts = {}", retryInterval, maxRetries);
 	}
 
 	public void run(ApplicationArguments args) {
@@ -76,7 +91,6 @@ public class AisLoader implements ApplicationRunner {
 					running.getAndIncrement();
 				}
 			}
-
 			while (isRunning()) {
 				processPending(selector);
 				selector.selectNow(this::processChannel);
@@ -98,23 +112,13 @@ public class AisLoader implements ApplicationRunner {
 		}
 	}
 
-	private static void registerChannel(ChannelFeed channelFeed, Selector selector) {
-		try {
-			channelFeed.channel().register(selector, SelectionKey.OP_READ, channelFeed.feed());
-			log.debug("Registered channel for {}", channelFeed.feed().connection());
-		} catch (ClosedChannelException ex) {
-			log.error("Unable to register channel: {}", ex.getMessage());
-		}
-	}
-
-
 	private void tryConnect(Feed feed) {
 		pending.add(getExecutor().submit(() ->
 		{
 			log.info("Attempting to connect to {} at {}", feed.id(), feed.connection());
 			int count = 0;
 			while (count < maxRetries) {
-				Optional<ChannelFeed> result = retryConnect(feed, count++);
+				Optional<ChannelFeed> result = retryConnect(feed, ++count);
 				if (result.isPresent()) {
 					return result;
 				}
@@ -131,21 +135,52 @@ public class AisLoader implements ApplicationRunner {
 			Duration duration = Duration.ofSeconds((long) Math.pow(retryInterval, count));
 			log.debug("Waiting {} before connection attempt {}", duration, count);
 			Thread.sleep(duration);
-			Connection connection = feed.connection();
-			SocketChannel channel = provider.openSocketChannel();
-			channel.connect(new InetSocketAddress(connection.host(), connection.port()));
+			SelectableChannel channel = openChannel(feed.connection());
 			channel.configureBlocking(false);
-			log.info("Channel connected to {}", channel.getRemoteAddress());
 			return Optional.of(new ChannelFeed(channel, feed));
 		} catch (IOException ex) {
 			return Optional.empty();
 		}
 	}
 
+	private SelectableChannel openChannel(Connection connection) throws IOException {
+		switch (connection.protocol()) {
+			case TCP -> {
+				SocketChannel channel = provider.openSocketChannel();
+				boolean result = channel.connect(new InetSocketAddress(connection.host(), connection.port()));
+				if (result) {
+					log.info("TCP channel connected to {}", channel.getRemoteAddress());
+				}
+				return channel;
+			}
+			case UDP -> {
+				DatagramChannel channel = provider.openDatagramChannel();
+				channel.bind(new InetSocketAddress(connection.port()));
+				channel.connect(new InetSocketAddress(connection.port() + 1));
+				if (channel.isConnected()) {
+					log.info("UDP channel listening on {} / {}", channel.getLocalAddress(),
+							channel.getRemoteAddress());
+				}
+				return channel;
+			}
+		}
+		throw new IllegalArgumentException("Connection protocol {} not supported");
+	}
+
+	private void registerChannel(ChannelFeed channelFeed, Selector selector) {
+		try {
+			channelFeed.channel().register(selector, SelectionKey.OP_READ, channelFeed.feed());
+			log.debug("Registered channel for {}", channelFeed.feed().connection());
+		} catch (ClosedChannelException ex) {
+			log.error("Unable to register channel: {}", ex.getMessage());
+		}
+	}
+
+
 	private void processChannel(SelectionKey key) {
 		try {
 			if (key.isReadable()) {
-				processMessage((Feed) key.attachment(), (SocketChannel) key.channel());
+				processMessage((Feed) key.attachment(), (ByteChannel) key.channel());
 			}
 		} catch (IOException ex) {
 			log.debug("Error while processing channels: {}", ex.getMessage());
@@ -181,7 +216,12 @@ public class AisLoader implements ApplicationRunner {
 	}
 
 	private void readMessage(Feed feed, String message) {
-		log.info("{} Read: '{}'", feed.id(), message);
+		try {
+			getRawMessageHandler().handleMessage(feed.id(), message).ifPresent(m ->
+					getAisMessageHandler().handleMessage(feed, m));
+		} catch (SentenceException | AisMessageException | SixbitException ex) {
+			log.info("Unhandled message '{}' due to {}", message, ex.getMessage());
+		}
 	}
 
 	private boolean isRunning() {
