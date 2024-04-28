@@ -1,6 +1,6 @@
 package uk.co.bluegecko.marine.loader.configuration;
 
-import org.springframework.boot.task.TaskExecutorCustomizer;
+import org.springframework.boot.task.ThreadPoolTaskExecutorCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 public class TaskConfiguration {
 
 	@Bean
-	public TaskExecutorCustomizer taskExecutorCustomizer() {
+	public ThreadPoolTaskExecutorCustomizer executorCustomizer() {
 		return taskExecutor -> taskExecutor.setDaemon(true);
 	}
 
