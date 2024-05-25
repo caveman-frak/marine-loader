@@ -25,7 +25,7 @@ import uk.co.bluegecko.marine.wire.batch.Batch;
 import uk.co.bluegecko.marine.wire.batch.BatchType;
 import uk.co.bluegecko.marine.wire.batch.Batchable;
 
-public class AbstractExtractorTest {
+public abstract class AbstractExtractorTest {
 
 	protected InputStream inputStream(@NonNull final String dir, @NonNull final String suffix) {
 		return Objects.requireNonNull(getSystemResourceAsStream(dir + "/" + file() + "." + suffix));

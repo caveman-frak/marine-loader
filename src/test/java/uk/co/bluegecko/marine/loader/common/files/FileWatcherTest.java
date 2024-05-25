@@ -13,26 +13,28 @@ import java.nio.file.Path;
 import java.nio.file.WatchService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import uk.co.bluegecko.marine.wire.batch.Batch;
 import uk.co.bluegecko.marine.wire.batch.BatchType;
 
-@ExtendWith(MockitoExtension.class)
+@SpringJUnitConfig
 class FileWatcherTest extends AbstractExtractorTest {
 
-	@Mock
+	/**
+	 * File system watcher {@link WatchService} can be a little slow to respond, 5 secs ensure enough time.
+	 */
+	public static final int TIMEOUT = 5;
+
+	@MockBean
 	FileProcessor<Path, InputStream, Batch> fileProcessor;
-	@Mock
+	@MockBean
 	Consumer<Batch> notifier;
 
 	@Test
-	@Disabled("Unexplained behaviour in gradle")
 	void testRegisterWithMock(@TempDir Path tmpDir) throws IOException, InterruptedException {
 		debug("Temp Dir: %s", tmpDir);
 		WatchService watchService = tmpDir.getFileSystem().newWatchService();
@@ -40,7 +42,7 @@ class FileWatcherTest extends AbstractExtractorTest {
 		fileWatcher.register(tmpDir, fileProcessor);
 
 		writeFile(tmpDir, "dummy-data.csv");
-		fileWatcher.poll(2, TimeUnit.SECONDS);
+		fileWatcher.poll(TIMEOUT, TimeUnit.SECONDS);
 
 		ArgumentCaptor<Path> arg = ArgumentCaptor.forClass(Path.class);
 		verify(fileProcessor).extract(arg.capture());
@@ -49,7 +51,6 @@ class FileWatcherTest extends AbstractExtractorTest {
 	}
 
 	@Test
-	@Disabled("Unexplained behaviour in gradle")
 	void testPoll(@TempDir Path tmpDir) throws IOException, InterruptedException {
 		debug("Temp Dir: %s", tmpDir);
 		WatchService watchService = tmpDir.getFileSystem().newWatchService();
@@ -57,7 +58,7 @@ class FileWatcherTest extends AbstractExtractorTest {
 		fileWatcher.register(tmpDir, new DummyFileProcessor(new PathExtractor(), notifier, csvParser()));
 
 		writeFile(tmpDir, "dummy-data.csv");
-		fileWatcher.poll(2, TimeUnit.SECONDS);
+		fileWatcher.poll(TIMEOUT, TimeUnit.SECONDS);
 
 		ArgumentCaptor<Batch> arg = ArgumentCaptor.forClass(Batch.class);
 		verify(notifier).accept(arg.capture());
@@ -77,7 +78,7 @@ class FileWatcherTest extends AbstractExtractorTest {
 
 		writeFile(tmpDir, "dummy-data.csv");
 		writeFile(tmpDir, "dummy-data.json");
-		fileWatcher.poll(2, TimeUnit.SECONDS);
+		fileWatcher.poll(TIMEOUT, TimeUnit.SECONDS);
 
 		ArgumentCaptor<Path> arg = ArgumentCaptor.forClass(Path.class);
 		verify(fileProcessor, times(2)).extract(arg.capture());
@@ -100,14 +101,12 @@ class FileWatcherTest extends AbstractExtractorTest {
 		assertThat(fileWatcher.isRegistered(tmpDir)).as("is registered").isFalse();
 	}
 
-	private Path writeFile(Path dir, String filename) throws IOException {
-		Path file = Files.createFile(dir.resolve(filename));
-		Files.writeString(file, """
+	private void writeFile(Path dir, String filename) throws IOException {
+		Files.writeString(Files.createFile(dir.resolve(filename)), """
 				"number","name"
 				100,"One Hundred"
 				22,"Twenty Two"
 				30,Thirty""", StandardCharsets.UTF_8);
-		return file;
 	}
 
 }

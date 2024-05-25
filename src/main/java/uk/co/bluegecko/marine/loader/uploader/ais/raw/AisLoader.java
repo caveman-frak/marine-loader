@@ -83,6 +83,7 @@ public class AisLoader implements ApplicationRunner {
 		log.info("Retry interval = {}s, max attempts = {}", retryInterval, maxRetries);
 	}
 
+	@Override
 	public void run(ApplicationArguments args) {
 		try (final Selector selector = provider.openSelector()) {
 			for (Feed feed : properties.feeds()) {

@@ -3,25 +3,23 @@ package uk.co.bluegecko.marine.loader.common.files;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import uk.co.bluegecko.marine.wire.batch.Batch;
 import uk.co.bluegecko.marine.wire.batch.BatchType;
 
-@ExtendWith(MockitoExtension.class)
+@SpringJUnitConfig
 class FileProcessorTest extends AbstractExtractorTest {
 
-	@Mock
+	@MockBean
 	Consumer<Batch> notifier;
 
 	@Test
-	void testProcessPath() throws URISyntaxException, IOException {
+	void testProcessPath() throws URISyntaxException {
 		var batch = new DummyFileProcessor(new PathExtractor(), csvParser()).extract(path(data()));
 
 		assertThat(batch).as("exists").isNotNull();
@@ -34,7 +32,7 @@ class FileProcessorTest extends AbstractExtractorTest {
 	}
 
 	@Test
-	void testProcessPathWithNotify() throws URISyntaxException, IOException {
+	void testProcessPathWithNotify() throws URISyntaxException {
 		new DummyFileProcessor(new PathExtractor(), notifier, csvParser()).extract(path(data()));
 
 		ArgumentCaptor<Batch> arg = ArgumentCaptor.forClass(Batch.class);
