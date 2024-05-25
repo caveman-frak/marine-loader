@@ -73,5 +73,5 @@ public class SanityCheckTest extends AbstractExtractorTest {
 			zin.closeEntry();
 		}
 	}
-	
+
 }
