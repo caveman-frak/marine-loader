@@ -32,3 +32,6 @@ build
 /src/integrationTest/generated_tests/
 /src/main/generated/
 /src/test/generated_tests/
+
+# Test Database
+/.jqwik-database
