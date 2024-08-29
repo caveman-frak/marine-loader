@@ -17,6 +17,6 @@ import uk.co.bluegecko.marine.shared.application.AbstractApplication;
 public class LoaderApplication extends AbstractApplication {
 
 	public static void main(String[] args) {
-		exit(run(LoaderApplication.class, WebApplicationType.NONE, args));
+		exit(run(LoaderApplication.class, args, web(WebApplicationType.NONE)));
 	}
 }
