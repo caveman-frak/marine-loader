@@ -3,9 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":shared"))
-    implementation(project(":wire"))
-    testImplementation(project(":test"))
     implementation("com.opencsv:opencsv:5.9") {
         exclude("commons-collections", "commons-collections")
     }
@@ -16,6 +13,15 @@ dependencies {
     }
     implementation("org.jcommander:jcommander:1.83")
     implementation("org.locationtech.spatial4j:spatial4j:0.8")
+}
+
+testing {
+    suites {
+        withType<JvmTestSuite> {
+            dependencies {
+            }
+        }
+    }
 }
 
 application {

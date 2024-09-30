@@ -2,7 +2,7 @@ package uk.co.bluegecko.marine.loader.common.files;
 
 import static org.assertj.core.api.Assertions.allOf;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.co.bluegecko.marine.test.jassert.Conditions.extracted;
+import static uk.co.bluegecko.marine.shared.jassert.Conditions.extracted;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
