@@ -22,7 +22,7 @@ class PathExtractorTest extends AbstractExtractorTest {
 				.isNotNull()
 				.hasSize(1);
 
-		assertThat(results.get(0))
+		assertThat(results.getFirst())
 				.is(allOf(extracted(r -> r.file().getFileName().toString(), "file name", "dummy-data.csv"),
 						extracted(r -> r.values().size(), "value", 4)));
 	}
@@ -36,7 +36,7 @@ class PathExtractorTest extends AbstractExtractorTest {
 				.isNotNull()
 				.hasSize(1);
 
-		assertThat(results.get(0))
+		assertThat(results.getFirst())
 				.is(allOf(extracted(r -> r.file().getFileName().toString(), "file name", "dummy-data.csv"),
 						extracted(r -> r.values().size(), "value", 4)));
 	}
@@ -50,7 +50,7 @@ class PathExtractorTest extends AbstractExtractorTest {
 				.isNotNull()
 				.hasSize(1);
 
-		assertThat(results.get(0))
+		assertThat(results.getFirst())
 				.is(allOf(extracted(r -> r.file().getFileName().toString(), "file name", "dummy-data.json"),
 						extracted(r -> r.values().size(), "value", 200)));
 	}
@@ -90,7 +90,7 @@ class PathExtractorTest extends AbstractExtractorTest {
 				.isNotNull()
 				.hasSize(1);
 
-		assertThat(results.get(0))
+		assertThat(results.getFirst())
 				.is(allOf(extracted(r -> r.file().getFileName().toString(), "file name", "dummy-data.csv"),
 						extracted(r -> r.values().size(), "value", 4)));
 	}
