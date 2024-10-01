@@ -125,7 +125,7 @@ public abstract class AbstractExtractorTest {
 		@SafeVarargs
 		public DummyFileProcessor(@NonNull final FileExtractor<Path, InputStream> fileExtractor,
 				@NonNull final FileParser<InputStream>... parsers) {
-			this(fileExtractor, v -> {
+			this(fileExtractor, _ -> {
 			}, parsers);
 		}
 
