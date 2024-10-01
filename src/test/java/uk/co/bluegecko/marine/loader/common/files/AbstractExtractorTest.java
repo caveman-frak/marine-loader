@@ -4,6 +4,7 @@ import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.ClassLoader.getSystemResourceAsStream;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
@@ -20,7 +21,6 @@ import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.zip.ZipInputStream;
 import lombok.NonNull;
-import lombok.SneakyThrows;
 import uk.co.bluegecko.marine.wire.batch.Batch;
 import uk.co.bluegecko.marine.wire.batch.BatchType;
 import uk.co.bluegecko.marine.wire.batch.Batchable;
@@ -129,10 +129,9 @@ public abstract class AbstractExtractorTest {
 			}, parsers);
 		}
 
-		@SneakyThrows
 		@Override
 		public Batch collect(@NonNull final Path file,
-				@NonNull final Map<Enum<?>, List<ParseResult>> results) {
+				@NonNull final Map<Enum<?>, List<ParseResult>> results) throws IOException {
 			ParseResult result = results.get(DummyType.CSV).getFirst();
 			return Batch.builder()
 					.type(BatchType.MIXED)

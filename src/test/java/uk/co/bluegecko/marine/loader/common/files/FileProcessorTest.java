@@ -3,6 +3,7 @@ package uk.co.bluegecko.marine.loader.common.files;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ class FileProcessorTest extends AbstractExtractorTest {
 	Consumer<Batch> notifier;
 
 	@Test
-	void testProcessPath() throws URISyntaxException {
+	void testProcessPath() throws URISyntaxException, IOException {
 		var batch = new DummyFileProcessor(new PathExtractor(), csvParser()).extract(path(data()));
 
 		assertThat(batch).as("exists").isNotNull();
@@ -32,7 +33,7 @@ class FileProcessorTest extends AbstractExtractorTest {
 	}
 
 	@Test
-	void testProcessPathWithNotify() throws URISyntaxException {
+	void testProcessPathWithNotify() throws URISyntaxException, IOException {
 		new DummyFileProcessor(new PathExtractor(), notifier, csvParser()).extract(path(data()));
 
 		ArgumentCaptor<Batch> arg = ArgumentCaptor.forClass(Batch.class);

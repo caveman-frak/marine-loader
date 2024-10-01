@@ -1,5 +1,6 @@
 package uk.co.bluegecko.marine.loader.common.files;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import lombok.NonNull;
@@ -20,7 +21,7 @@ public interface FileProcessor<I, T, V> {
 	 * @param results the set of parsed values.
 	 * @return the collected result.
 	 */
-	V collect(@NonNull final I input, @NonNull final Map<Enum<?>, List<ParseResult>> results);
+	V collect(@NonNull final I input, @NonNull final Map<Enum<?>, List<ParseResult>> results) throws IOException;
 
 	/**
 	 * Process the contents using the supplied file extractor to generate a collected result.
@@ -28,7 +29,7 @@ public interface FileProcessor<I, T, V> {
 	 * @param input the input to process.
 	 * @return the collected result.
 	 */
-	default V extract(@NonNull final I input) {
+	default V extract(@NonNull final I input) throws IOException {
 		return notify(collect(input, fileExtractor().extract(input, parsers())));
 	}
 

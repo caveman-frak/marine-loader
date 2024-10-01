@@ -1,5 +1,6 @@
 package uk.co.bluegecko.marine.loader.common.files;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
@@ -9,7 +10,6 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import lombok.NonNull;
-import lombok.SneakyThrows;
 import org.springframework.util.LinkedMultiValueMap;
 
 /**
@@ -25,11 +25,10 @@ public class ZipStreamExtractor implements FileExtractor<ZipInputStream, InputSt
 	 * @param parsers the parsers to apply to the extracted files.
 	 * @return the map of parse results.
 	 */
-	@SneakyThrows
 	@SafeVarargs
 	@Override
 	public final Map<Enum<?>, List<ParseResult>> extract(@NonNull final ZipInputStream in,
-			@NonNull final FileParser<InputStream>... parsers) {
+			@NonNull final FileParser<InputStream>... parsers) throws IOException {
 		final var results = new LinkedMultiValueMap<Enum<?>, ParseResult>();
 		final var masks = Stream.of(parsers).collect(Collectors.toMap(FileParser::mask, p -> p));
 

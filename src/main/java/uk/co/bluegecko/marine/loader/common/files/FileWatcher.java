@@ -1,5 +1,7 @@
 package uk.co.bluegecko.marine.loader.common.files;
 
+import static uk.co.bluegecko.marine.shared.utility.function.ThrowingConsumer.quietConsumer;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
@@ -11,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import lombok.NonNull;
-import lombok.SneakyThrows;
 
 /**
  * A watcher that allows {@link FileProcessor} to be registered against a particular {@link Path}.
@@ -128,7 +129,7 @@ public class FileWatcher {
 				final Path directory = (Path) key.watchable();
 				key.pollEvents()
 						.stream().filter(e -> valid.contains(e.kind()))
-						.forEach(e -> processor.extract(directory.resolve((Path) e.context())));
+						.forEach(quietConsumer(e -> processor.extract(directory.resolve((Path) e.context()))));
 			}
 			key.reset();
 			key = watchService.poll();
@@ -141,8 +142,7 @@ public class FileWatcher {
 	 *
 	 * @return if any events had been fired.
 	 */
-	@SneakyThrows
-	public boolean poll() {
+	public boolean poll() throws InterruptedException {
 		return poll(0, TimeUnit.SECONDS);
 	}
 
