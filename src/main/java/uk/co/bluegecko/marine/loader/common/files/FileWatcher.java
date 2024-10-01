@@ -1,6 +1,6 @@
 package uk.co.bluegecko.marine.loader.common.files;
 
-import static uk.co.bluegecko.marine.shared.utility.function.ThrowingConsumer.quietConsumer;
+import static uk.co.bluegecko.marine.shared.utility.function.QuietFunctions.quietConsumer;
 
 import java.io.IOException;
 import java.nio.file.Path;

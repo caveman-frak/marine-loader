@@ -1,7 +1,7 @@
 package uk.co.bluegecko.marine.loader.common.files;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.co.bluegecko.marine.shared.jassert.Conditions.extracted;
+import static uk.co.bluegecko.marine.shared.test.jassert.Conditions.extracted;
 
 import java.io.BufferedReader;
 import java.io.IOException;
