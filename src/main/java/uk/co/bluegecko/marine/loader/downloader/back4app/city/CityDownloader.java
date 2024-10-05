@@ -2,24 +2,30 @@ package uk.co.bluegecko.marine.loader.downloader.back4app.city;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.opencsv.CSVWriterBuilder;
-import com.opencsv.ICSVWriter;
 import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.beanio.BeanWriter;
+import org.beanio.StreamFactory;
+import org.beanio.builder.FieldBuilder;
+import org.beanio.builder.RecordBuilder;
+import org.beanio.builder.StreamBuilder;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
+import uk.co.bluegecko.marine.loader.downloader.back4app.city.City.Fields;
 import uk.co.bluegecko.marine.loader.downloader.back4app.core.Back4AppProperties;
 import uk.co.bluegecko.marine.loader.downloader.back4app.core.Back4AppProperties.Application;
 import uk.co.bluegecko.marine.loader.downloader.back4app.core.Back4AppProperties.Connection;
@@ -33,11 +39,16 @@ import uk.co.bluegecko.marine.loader.downloader.back4app.core.Back4AppProperties
 @ConditionalOnProperty(prefix = "marine.back4app", name = "enabled", havingValue = "true")
 public class CityDownloader implements ApplicationRunner {
 
+	private static final String HEADER = "Header";
+	private static final String STREAM = "Cities";
+	private static final String RECORD = "City";
+	private static final String FORMAT = "csv";
+
 	Back4AppProperties properties;
 
 	@SuppressWarnings("SpellCheckingInspection")
 	@Override
-	public void run(ApplicationArguments args) {
+	public void run(ApplicationArguments args) throws IOException {
 		final Connection connection = properties.connection();
 		final Application application = properties.application();
 		log.info("Connecting to {}://{} with limit {}, using ID: {} and token: {}",
@@ -57,13 +68,14 @@ public class CityDownloader implements ApplicationRunner {
 						"SH:Jamestown",
 						"TK:Fakaofo");
 
-		try (ICSVWriter writer =
-				new CSVWriterBuilder(new FileWriter("build/missing-cities.csv"))
-						.withQuoteChar('"')
-						.withSeparator(',')
-						.build()) {
+		StreamFactory factory = StreamFactory.newInstance();
+		factory.define(new StreamBuilder(STREAM, FORMAT)
+				.addRecord(new RecordBuilder(RECORD).type(City.class))
+				.addRecord(recordHeader()));
 
-			writer.writeNext(City.asHeaders());
+		Writer writer = new FileWriter("build/missing-cities.csv");
+		try (BeanWriter out = factory.createWriter(STREAM, writer)) {
+			out.write(HEADER, null);
 
 			for (String missing : missingEntries) {
 				var s = missing.split(":");
@@ -107,7 +119,7 @@ public class CityDownloader implements ApplicationRunner {
 
 						if (!found && missingCountry.equals(city.country().code())) {
 							log.info("Writing {} / {}", city.name(), city.country().code());
-							writer.writeNext(city.asStrings(), false);
+							out.write(city);
 							found = true;
 						} else if (found) {
 							log.debug("Skipping {} / {}, already found a matching city", city.name(),
@@ -126,6 +138,13 @@ public class CityDownloader implements ApplicationRunner {
 		} catch (IOException ex) {
 			log.error("Failed to process cities", ex);
 		}
+	}
+
+	private RecordBuilder recordHeader() {
+		RecordBuilder header = new RecordBuilder(HEADER);
+		Arrays.stream(Fields.values()).map(Enum::name)
+				.forEach(f -> header.addField(new FieldBuilder(f).defaultValue(f)));
+		return header;
 	}
 
 }
