@@ -9,7 +9,8 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 public record Back4AppProperties(boolean enabled,
                                  Connection connection,
                                  Application application,
-                                 @DefaultValue("10") int limit) {
+                                 @DefaultValue("10") int limit,
+                                 @DefaultValue("build/missing-cities.csv") String output) {
 
 	public record Connection(String scheme, String host, Map<String, String> path) {
 

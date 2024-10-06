@@ -5,12 +5,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Arrays;
 import java.util.Iterator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.co.bluegecko.marine.loader.downloader.back4app.city.City.Country;
-import uk.co.bluegecko.marine.loader.downloader.back4app.city.City.Fields;
 import uk.co.bluegecko.marine.loader.downloader.back4app.city.City.Location;
 
 class CityTest {
@@ -62,12 +60,6 @@ class CityTest {
 		Iterator<JsonNode> results = mapper.readTree(CITIES).get("results").elements();
 
 		assertThat(mapper.treeToValue(results.next(), City.class)).isEqualTo(city);
-	}
-
-	@Test
-	void testField() {
-		assertThat(Arrays.stream(Fields.values()).map(Enum::name).toArray(String[]::new)).hasSize(6)
-				.containsExactly("id", "name", "adminCode", "location", "population", "country");
 	}
 
 }
