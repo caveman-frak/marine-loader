@@ -27,25 +27,21 @@ public class CityCsv {
 
 	static StreamFactory streamFactory() {
 		StreamFactory factory = StreamFactory.newInstance();
-		factory.define(streamBuilder());
+		factory.define(new StreamBuilder(STREAM, FORMAT)
+				.addRecord(buildHeader())
+				.addRecord(buildRecord())
+				.writeOnly());
 		return factory;
 	}
 
-	static StreamBuilder streamBuilder() {
-		return new StreamBuilder(STREAM, FORMAT)
-				.addRecord(recordBuilder())
-				.addRecord(recordHeader())
-				.writeOnly();
-	}
-
-	static RecordBuilder recordBuilder() {
+	static RecordBuilder buildRecord() {
 		RecordBuilder builder = new RecordBuilder(RECORD, Csv.class);
 		Arrays.stream(Csv.Fields.values()).map(Enum::name)
 				.forEach(f -> builder.addField(new FieldBuilder(f)));
 		return builder;
 	}
 
-	static RecordBuilder recordHeader() {
+	static RecordBuilder buildHeader() {
 		RecordBuilder builder = new RecordBuilder(HEADER);
 		Arrays.stream(Csv.Fields.values()).map(Enum::name)
 				.forEach(f -> builder.addField(new FieldBuilder(f).defaultValue(f)));

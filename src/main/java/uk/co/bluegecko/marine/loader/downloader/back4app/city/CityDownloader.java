@@ -1,7 +1,7 @@
 package uk.co.bluegecko.marine.loader.downloader.back4app.city;
 
 import static uk.co.bluegecko.marine.loader.downloader.back4app.city.CityCsv.beanWriter;
-import static uk.co.bluegecko.marine.loader.downloader.back4app.city.CityCsv.export;
+import static uk.co.bluegecko.marine.shared.utility.function.QuietFunctions.quietFunction;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,11 +9,14 @@ import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.StreamSupport;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.beanio.BeanWriter;
@@ -65,61 +68,83 @@ public class CityDownloader implements ApplicationRunner {
 				String missingCountry = s[0];
 				String missingCity = s[1];
 
-				URL url = UriComponentsBuilder.newInstance()
-						.scheme(connection.scheme())
-						.host(connection.host())
-						.path(connection.path("city"))
-						.queryParam("skip", 0)
-						.queryParam("limit", properties.limit())
-						.queryParam("include", "country")
-						.queryParam("order", "-population")
-						.queryParam("count", 1)
-						.queryParam("keys",
-								"name,country,country.code,population,location,cityId,adminCode")
-						.queryParam("where", String.format("{ \"name\": \"%s\" }", missingCity))
-						.build()
-						.encode(StandardCharsets.UTF_8)
-						.toUri()
-						.toURL();
+				URL url = buildCityUrl(connection, missingCity);
 
 				HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 				urlConnection.setRequestProperty("X-Parse-Application-Id", application.id());
 				urlConnection.setRequestProperty("X-Parse-REST-API-Key", application.key());
-				try (BufferedReader reader =
-						new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
-					JsonNode node = mapper.readTree(reader);
 
-					int count = node.get("count").asInt();
-					if (count >= properties.limit()) {
-						log.warn("Correct city ({}) for {} may be missed, as only {}/{} results returned",
-								missingCity, missingCountry, properties.limit(), count);
-					}
+				try (BufferedReader reader = new BufferedReader(
+						new InputStreamReader(urlConnection.getInputStream()))) {
+					List<City> cities = extractCities(mapper, reader, missingCity, missingCountry);
 
-					boolean found = false;
-					Iterator<JsonNode> results = node.get("results").elements();
-					while (results.hasNext()) {
-						City city = mapper.treeToValue(results.next(), City.class);
-
-						if (!found && missingCountry.equals(city.country().code())) {
-							log.info("Writing {} / {}", city.name(), city.country().code());
-							writer.write(export(city));
-							found = true;
-						} else if (found) {
-							log.debug("Skipping {} / {}, already found a matching city", city.name(),
-									city.country().code());
-						} else {
-							log.debug("Skipping {} / {}, wanted country {}", city.name(), city.country().code(),
-									missingCountry);
-						}
-					}
-					if (!found) {
-						log.warn("No city found for {} / {}", missingCity, missingCountry);
-					}
+					processResults(cities, missingCity, missingCountry).ifPresent(writer::write);
 				}
 			}
 		} catch (IOException ex) {
 			log.error("Failed to process cities", ex);
 		}
+	}
+
+	List<City> extractCities(ObjectMapper mapper, Reader reader, String missingCity, String missingCountry)
+			throws IOException {
+		JsonNode node = mapper.readTree(reader);
+
+		int count = node.get("count").asInt();
+		if (count >= properties.limit()) {
+			log.warn("Correct city ({}) for {} may be missed, as only {}/{} results returned",
+					missingCity, missingCountry, properties.limit(), count);
+		}
+
+		return StreamSupport.stream(node.get("results").spliterator(), false)
+				.map(quietFunction(n -> mapper.treeToValue(n, City.class))).toList();
+	}
+
+	Optional<City> processResults(List<City> cities, String missingCity, String missingCountry) throws IOException {
+		boolean found = false;
+		City result = null;
+		for (City city : cities) {
+			if (missingCity.equals(city.name()) && missingCountry.equals(city.country().code())) {
+				if (!found) {
+					log.info("Writing {} / {}", city.name(), city.country().code());
+					result = city;
+					found = true;
+				} else {
+					log.debug("Skipping {} / {}, already found a matching entry", city.name(), city.country().code());
+				}
+			} else if (missingCity.equals(city.name())) {
+				log.debug("Skipping {} / {}, country should be {}", city.name(), city.country().code(), missingCountry);
+			} else if (missingCountry.equals(city.country().code())) {
+				log.debug("Skipping {} / {}, city should be {}", city.name(), city.country().code(), missingCity);
+			} else {
+				log.debug("Skipping {} / {}, looking for {} / {}",
+						city.name(), city.country().code(), missingCity, missingCountry);
+			}
+
+			if (!found) {
+				log.warn("No city found for {} / {}", missingCity, missingCountry);
+			}
+		}
+		return Optional.ofNullable(result);
+	}
+
+	URL buildCityUrl(Connection connection, String missingCity) throws MalformedURLException {
+		return UriComponentsBuilder.newInstance()
+				.scheme(connection.scheme())
+				.host(connection.host())
+				.path(connection.path("city"))
+				.queryParam("skip", 0)
+				.queryParam("limit", properties.limit())
+				.queryParam("include", "country")
+				.queryParam("order", "-population")
+				.queryParam("count", 1)
+				.queryParam("keys",
+						"name,country,country.code,population,location,cityId,adminCode")
+				.queryParam("where", String.format("{ \"name\": \"%s\" }", missingCity))
+				.build()
+				.encode(StandardCharsets.UTF_8)
+				.toUri()
+				.toURL();
 	}
 
 }
