@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import uk.co.bluegecko.marine.wire.batch.Batch;
 import uk.co.bluegecko.marine.wire.batch.BatchType;
@@ -29,9 +29,9 @@ class FileWatcherTest extends AbstractExtractorTest {
 	 */
 	public static final int TIMEOUT = 5;
 
-	@MockBean
+	@MockitoBean
 	FileProcessor<Path, InputStream, Batch> fileProcessor;
-	@MockBean
+	@MockitoBean
 	Consumer<Batch> notifier;
 
 	@Test

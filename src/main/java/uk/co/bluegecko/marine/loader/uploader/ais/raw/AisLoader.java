@@ -15,6 +15,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
 import java.time.Duration;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -99,7 +100,14 @@ public class AisLoader implements ApplicationRunner {
 		} catch (IOException ex) {
 			log.error("Error while processing selector: {}", ex.getMessage());
 		}
+		printCounts(aisMessageHandler.counts());
 		log.info("Exiting ...");
+	}
+
+	private void printCounts(Map<Integer, Integer> counts) {
+		StringBuilder builder = new StringBuilder("Message Counts by Type:\n");
+		counts.forEach((i, c) -> builder.append("\tType: %d = %d\n", i, c));
+		log.warn(builder.toString());
 	}
 
 	private void processPending(Selector selector) {
@@ -231,7 +239,7 @@ public class AisLoader implements ApplicationRunner {
 
 	@Bean
 	public ApplicationListener<ContextClosedEvent> registerFeedMonitor() {
-		return e -> running.set(0);
+		return _ -> running.set(0);
 	}
 
 	private record ChannelFeed(SelectableChannel channel, Feed feed) {

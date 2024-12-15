@@ -8,7 +8,7 @@ import java.net.URISyntaxException;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import uk.co.bluegecko.marine.wire.batch.Batch;
 import uk.co.bluegecko.marine.wire.batch.BatchType;
@@ -16,7 +16,7 @@ import uk.co.bluegecko.marine.wire.batch.BatchType;
 @SpringJUnitConfig
 class FileProcessorTest extends AbstractExtractorTest {
 
-	@MockBean
+	@MockitoBean
 	Consumer<Batch> notifier;
 
 	@Test
